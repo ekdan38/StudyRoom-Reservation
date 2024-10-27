@@ -2,8 +2,9 @@ package com.jeong.studyroomreservation.domain.service;
 
 import com.jeong.studyroomreservation.domain.dto.UserDto;
 import com.jeong.studyroomreservation.domain.entity.User;
-import com.jeong.studyroomreservation.domain.exception.EmailAlreadyExistsException;
-import com.jeong.studyroomreservation.domain.exception.LoginIdAlreadyExistsException;
+import com.jeong.studyroomreservation.domain.error.ErrorCode;
+import com.jeong.studyroomreservation.domain.error.exception.EmailAlreadyExistsException;
+import com.jeong.studyroomreservation.domain.error.exception.LoginIdAlreadyExistsException;
 import com.jeong.studyroomreservation.domain.mapper.UserMapper;
 import com.jeong.studyroomreservation.domain.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -29,13 +30,14 @@ public class UserService {
 
         if(userRepository.existsByLoginId(loginId)){
             log.error("Exist LoginId = {}", loginId);
-            throw new LoginIdAlreadyExistsException("Exist LoginId" + loginId);
+            throw new LoginIdAlreadyExistsException(ErrorCode.LOGINID_ALREADY_EXISTS);
         }
 
         String email = requestDto.getEmail();
         if(userRepository.existsByEmail(email)){
             log.error("Exist Email = {}", email);
-            throw new EmailAlreadyExistsException("Exist Email" + email);
+//            throw new EmailAlreadyExistsException("Exist Email" + email);
+            throw new EmailAlreadyExistsException(ErrorCode.EMAIL_ALREADY_EXISTS);
         }
 
         // User 저장
