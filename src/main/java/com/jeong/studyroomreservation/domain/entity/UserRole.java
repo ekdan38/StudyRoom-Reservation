@@ -1,6 +1,6 @@
 package com.jeong.studyroomreservation.domain.entity;
 
 public enum UserRole {
-    USER, MANAGER, ADMIN
+    ROLE_USER, ROLE_MANAGER, ROLE_ADMIN
 
 }

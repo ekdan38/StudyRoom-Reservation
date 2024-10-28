@@ -13,10 +13,7 @@ import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @Slf4j(topic = "authController")
@@ -39,10 +36,14 @@ public class AuthController {
         return ResponseEntity.ok().body(responseBody);
     }
 
-    @GetMapping("/api/role")
-    public ResponseEntity<?> testRole(){
+
+    @RequestMapping("/api/all")
+    public String test(@AuthenticationPrincipal UserDto userDto){
         SecurityContext context = SecurityContextHolder.getContextHolderStrategy().getContext();
         String string = context.getAuthentication().getClass().toString();
-        return ResponseEntity.ok().body(string);
+        String string1 = context.getAuthentication().getPrincipal().toString();
+
+
+        return string + ",    " +string1 + ",    " +userDto ;
     }
 }

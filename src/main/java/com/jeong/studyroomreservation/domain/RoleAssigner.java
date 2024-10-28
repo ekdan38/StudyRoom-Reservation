@@ -11,13 +11,13 @@ public class RoleAssigner {
         /**
          * 일단 권한은 클라이언트 전송으로만 해결한다.
          */
-        UserRole role = UserRole.USER;
+        UserRole role = UserRole.ROLE_USER;
 
         if(requestDto.isManager()){
-            role = UserRole.MANAGER;
+            role = UserRole.ROLE_MANAGER;
         }
         if(requestDto.isAdmin()){
-            role = UserRole.ADMIN;
+            role = UserRole.ROLE_ADMIN;
         }
         return role;
     }

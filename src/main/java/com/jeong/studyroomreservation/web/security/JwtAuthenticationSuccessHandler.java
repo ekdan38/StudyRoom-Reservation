@@ -33,6 +33,8 @@ public class JwtAuthenticationSuccessHandler implements AuthenticationSuccessHan
         log.info("userDto.getRole() = {}", userDto.getRole());
         SecurityContextHolder.getContext().setAuthentication(authentication);
         SecurityContext context = SecurityContextHolder.getContextHolderStrategy().getContext();
+
+
         UserDto principal = (UserDto)context.getAuthentication().getPrincipal();
         log.info(principal.getClass().toString());
         log.info(principal.getName());

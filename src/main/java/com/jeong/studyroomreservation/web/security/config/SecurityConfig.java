@@ -35,17 +35,30 @@ public class SecurityConfig {
     private final JwtProvider jwtProvider;
 
     @Bean
-    @Order(2)
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+        AuthenticationManagerBuilder builder = http.getSharedObject(AuthenticationManagerBuilder.class);
+        builder.authenticationProvider(jwtAuthenticationProvider);
+        AuthenticationManager authenticationManager = builder.build();
+
         http
                 //jwt 사용하기에 세션 생성 xx
                 .sessionManagement(session -> session
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .csrf(AbstractHttpConfigurer::disable)
+
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/api/signup").permitAll()
-                        .requestMatchers("/api/role").permitAll()
+                        .requestMatchers("/api/all").hasRole("USER")
                         .anyRequest().authenticated())
+
+                .addFilterBefore(jwtAuthorizationFilter(), UsernamePasswordAuthenticationFilter.class)
+                .authenticationManager(authenticationManager)
+                .exceptionHandling(exception -> exception
+                        .authenticationEntryPoint(jwtAuthenticationEntryPoint)
+                        .accessDeniedHandler(jwtDeniedHandler))
+                .sessionManagement(session -> session
+                        .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .csrf(AbstractHttpConfigurer::disable)
         ;
 
         return http.build();
@@ -60,25 +73,26 @@ public class SecurityConfig {
 
         http
                 //jwt 사용하기에 세션 생성 xx
-                .sessionManagement(session -> session
-                        .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .csrf(AbstractHttpConfigurer::disable)
                 .securityMatcher("/api/login/**")
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/css/**", "/images/**", "/js/**", "/favicon.*", "/*/icon-*").permitAll()
                         .requestMatchers("/api/login").permitAll()
+                        .requestMatchers("/api/login/all").permitAll()
                         .anyRequest().authenticated()
                 )
-                .addFilterBefore(jwtAuthorizationFilter(), UsernamePasswordAuthenticationFilter.class)
-                .addFilterAfter(jwtAuthenticationFilter(http, authenticationManager), JwtAuthorizationFilter.class)
+                .addFilterAfter(jwtAuthenticationFilter(http, authenticationManager), UsernamePasswordAuthenticationFilter.class)
                 .authenticationManager(authenticationManager)
                 .exceptionHandling(exception -> exception
                         .authenticationEntryPoint(jwtAuthenticationEntryPoint)
                         .accessDeniedHandler(jwtDeniedHandler))
+                .sessionManagement(session -> session
+                        .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .csrf(AbstractHttpConfigurer::disable)
         ;
 
         return http.build();
     }
+
     private JwtAuthorizationFilter jwtAuthorizationFilter(){
         JwtAuthorizationFilter jwtAuthorizationFilter = new JwtAuthorizationFilter(jwtProvider, jwtUserDetailsService);
         return jwtAuthorizationFilter;
