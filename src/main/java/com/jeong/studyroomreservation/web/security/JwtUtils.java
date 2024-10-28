@@ -1,5 +1,6 @@
 package com.jeong.studyroomreservation.web.security;
 
+import com.jeong.studyroomreservation.domain.dto.UserDto;
 import com.jeong.studyroomreservation.domain.entity.UserRole;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
@@ -30,6 +31,8 @@ public class JwtUtils {
     public static final String AUTHORIZATION_KEY = "auth";
     // Token 식별자
     public static final String BEARER_PREFIX = "Bearer ";
+    public static final String BEARER_TYPE = "Bearer";
+
     // 토큰 만료시간
     private final long ACCESS_TOKEN_EXPIRATION_TIME = 60 * 60 * 1000L; // 60분
     // Refresh 토큰
@@ -50,17 +53,33 @@ public class JwtUtils {
     }
 
     // 토큰 생성
-    public String createToken(String loginId, UserRole role) {
+    public TokenDto createToken(UserDto userDto) {
         Date date = new Date();
 
-        return BEARER_PREFIX +
-                Jwts.builder()
-                        .setSubject(loginId) // 사용자 식별자값(ID)
-                        .claim(AUTHORIZATION_KEY, role) // 사용자 권한
-                        .setExpiration(new Date(date.getTime() + ACCESS_TOKEN_EXPIRATION_TIME)) // 만료 시간
-                        .setIssuedAt(date) // 발급일
-                        .signWith(key, signatureAlgorithm) // 암호화 알고리즘
-                        .compact();
+        String accessToken =
+                BEARER_PREFIX +
+                        Jwts.builder()
+                                .claim(AUTHORIZATION_KEY, userDto.getRole()) // 사용자 권한
+                                .setSubject(userDto.getLoginId()) // 사용자 식별자값(ID)
+                                .setExpiration(new Date(date.getTime() + ACCESS_TOKEN_EXPIRATION_TIME)) // 만료 시간
+                                .setIssuedAt(date) // 발급일
+                                .signWith(key, signatureAlgorithm) // 암호화 알고리즘
+                                .compact();
+        String refreshToken =
+                        Jwts.builder()
+                                .setSubject(userDto.getLoginId()) // 사용자 식별자값(ID)
+                                .setExpiration(new Date(date.getTime() + REFRESH_TOKEN_EXPIRATION_TIME)) // 만료 시간
+                                .setIssuedAt(date) // 발급일
+                                .signWith(key) // 암호화 알고리즘
+                                .compact();
+
+        return TokenDto.builder()
+                .grantType(BEARER_TYPE)
+                .authorizationType(AUTHORIZATION_HEADER)
+                .accessToken(accessToken)
+                .accessTokenExpiresIn(new Date(date.getTime() + ACCESS_TOKEN_EXPIRATION_TIME).getTime())
+                .refreshToken(refreshToken)
+                .build();
     }
 
     // JWT Cookie 에 저장
@@ -108,10 +127,11 @@ public class JwtUtils {
     public Claims getUserInfoFromToken(String token) {
         return Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token).getBody();
     }
+
     // HttpServletRequest 에서 Cookie Value : JWT 가져오기
     public String getTokenFromRequest(HttpServletRequest req) {
         Cookie[] cookies = req.getCookies();
-        if(cookies != null) {
+        if (cookies != null) {
             for (Cookie cookie : cookies) {
                 if (cookie.getName().equals(AUTHORIZATION_HEADER)) {
                     try {

@@ -36,7 +36,7 @@ public class JwtAuthenticationSuccessHandler implements AuthenticationSuccessHan
         UserDto principal = (UserDto)context.getAuthentication().getPrincipal();
         log.info(principal.getClass().toString());
         log.info(principal.getName());
-        String token = jwtUtils.createToken(userDto.getLoginId(), userDto.getRole());
+        String token = jwtUtils.createToken(userDto);
         jwtUtils.addJwtToCookie(token, response);
     }
 }
