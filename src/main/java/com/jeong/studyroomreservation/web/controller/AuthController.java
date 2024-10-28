@@ -42,7 +42,7 @@ public class AuthController {
     @GetMapping("/api/role")
     public ResponseEntity<?> testRole(){
         SecurityContext context = SecurityContextHolder.getContextHolderStrategy().getContext();
-        UserDto userDto = (UserDto)context.getAuthentication().getPrincipal();
-        return ResponseEntity.ok().body(userDto);
+        String string = context.getAuthentication().getClass().toString();
+        return ResponseEntity.ok().body(string);
     }
 }
