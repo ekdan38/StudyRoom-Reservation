@@ -1,5 +1,6 @@
-package com.jeong.studyroomreservation.domain.error;
+package com.jeong.studyroomreservation.web.dto;
 
+import com.jeong.studyroomreservation.domain.error.ErrorCode;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

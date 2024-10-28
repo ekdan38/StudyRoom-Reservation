@@ -1,7 +1,7 @@
 package com.jeong.studyroomreservation.web.exceptionhandler;
 
 import com.jeong.studyroomreservation.domain.error.ErrorCode;
-import com.jeong.studyroomreservation.domain.error.ErrorResponse;
+import com.jeong.studyroomreservation.web.dto.ErrorResponse;
 import com.jeong.studyroomreservation.domain.error.exception.EmailAlreadyExistsException;
 import com.jeong.studyroomreservation.domain.error.exception.LoginIdAlreadyExistsException;
 import lombok.extern.slf4j.Slf4j;
