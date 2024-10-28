@@ -1,8 +1,6 @@
 package com.jeong.studyroomreservation.web.security;
 
 import com.jeong.studyroomreservation.domain.dto.UserDto;
-import com.jeong.studyroomreservation.domain.entity.User;
-import com.jeong.studyroomreservation.domain.entity.UserRole;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -21,7 +19,7 @@ import java.io.IOException;
 @Slf4j(topic = "JwtAuthenticationSuccessHandler")
 public class JwtAuthenticationSuccessHandler implements AuthenticationSuccessHandler {
 
-    private final JwtProvider jwtProvider;
+    private final JwtUtils jwtUtils;
 
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException, ServletException {
@@ -38,7 +36,7 @@ public class JwtAuthenticationSuccessHandler implements AuthenticationSuccessHan
         UserDto principal = (UserDto)context.getAuthentication().getPrincipal();
         log.info(principal.getClass().toString());
         log.info(principal.getName());
-        String token = jwtProvider.createToken(userDto.getLoginId(), userDto.getRole());
-        jwtProvider.addJwtToCookie(token, response);
+        String token = jwtUtils.createToken(userDto.getLoginId(), userDto.getRole());
+        jwtUtils.addJwtToCookie(token, response);
     }
 }

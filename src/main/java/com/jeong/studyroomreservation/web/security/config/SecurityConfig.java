@@ -13,13 +13,8 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.factory.PasswordEncoderFactories;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-
-import java.security.Security;
 
 @EnableWebSecurity
 @Configuration
@@ -32,7 +27,7 @@ public class SecurityConfig {
     private final JwtAuthenticationFailureHandler jwtAuthenticationFailureHandler;
     private final JwtUserDetailsService jwtUserDetailsService;
     private final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
-    private final JwtProvider jwtProvider;
+    private final JwtUtils jwtUtils;
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -94,7 +89,7 @@ public class SecurityConfig {
     }
 
     private JwtAuthorizationFilter jwtAuthorizationFilter(){
-        JwtAuthorizationFilter jwtAuthorizationFilter = new JwtAuthorizationFilter(jwtProvider, jwtUserDetailsService);
+        JwtAuthorizationFilter jwtAuthorizationFilter = new JwtAuthorizationFilter(jwtUtils, jwtUserDetailsService);
         return jwtAuthorizationFilter;
     }
 

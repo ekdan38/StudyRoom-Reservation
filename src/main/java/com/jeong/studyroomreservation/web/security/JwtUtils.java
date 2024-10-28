@@ -23,7 +23,7 @@ import java.util.Date;
 @Component
 @RequiredArgsConstructor
 @Slf4j(topic = "JwtProvider")
-public class JwtProvider {
+public class JwtUtils {
     // Header KEY 값
     public static final String AUTHORIZATION_HEADER = "Authorization";
     // 사용자 권한 값의 KEY
@@ -31,7 +31,9 @@ public class JwtProvider {
     // Token 식별자
     public static final String BEARER_PREFIX = "Bearer ";
     // 토큰 만료시간
-    private final long TOKEN_TIME = 60 * 60 * 1000L; // 60분
+    private final long ACCESS_TOKEN_EXPIRATION_TIME = 60 * 60 * 1000L; // 60분
+
+
 
     @Value("${jwt.secret.key}")
     private String secretKey;
@@ -52,7 +54,7 @@ public class JwtProvider {
                 Jwts.builder()
                         .setSubject(loginId) // 사용자 식별자값(ID)
                         .claim(AUTHORIZATION_KEY, role) // 사용자 권한
-                        .setExpiration(new Date(date.getTime() + TOKEN_TIME)) // 만료 시간
+                        .setExpiration(new Date(date.getTime() + ACCESS_TOKEN_EXPIRATION_TIME)) // 만료 시간
                         .setIssuedAt(date) // 발급일
                         .signWith(key, signatureAlgorithm) // 암호화 알고리즘
                         .compact();
