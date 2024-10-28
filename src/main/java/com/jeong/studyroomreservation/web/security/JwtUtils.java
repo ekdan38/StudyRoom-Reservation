@@ -32,7 +32,10 @@ public class JwtUtils {
     public static final String BEARER_PREFIX = "Bearer ";
     // 토큰 만료시간
     private final long ACCESS_TOKEN_EXPIRATION_TIME = 60 * 60 * 1000L; // 60분
-
+    // Refresh 토큰
+    public static final String REFRESH_HEADER = "Refresh";
+    // Refresh 토큰 만료 시간
+    private final long REFRESH_TOKEN_EXPIRATION_TIME = 60 * 60 * 1000L; // 60분
 
 
     @Value("${jwt.secret.key}")
