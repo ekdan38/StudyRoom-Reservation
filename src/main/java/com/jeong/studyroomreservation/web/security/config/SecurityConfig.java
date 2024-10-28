@@ -1,9 +1,6 @@
 package com.jeong.studyroomreservation.web.security.config;
 
-import com.jeong.studyroomreservation.web.security.JwtAuthenticationFilter;
-import com.jeong.studyroomreservation.web.security.JwtAuthenticationProvider;
-import com.jeong.studyroomreservation.web.security.JwtAuthenticationSuccessHandler;
-import com.jeong.studyroomreservation.web.security.JwtDeniedHandler;
+import com.jeong.studyroomreservation.web.security.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -15,6 +12,7 @@ import org.springframework.security.config.annotation.authentication.builders.Au
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -31,13 +29,22 @@ public class SecurityConfig {
     private final JwtAuthenticationSuccessHandler jwtAuthenticationSuccessHandler;
     private final JwtAuthenticationProvider jwtAuthenticationProvider;
     private final JwtDeniedHandler jwtDeniedHandler;
+    private final JwtAuthenticationFailureHandler jwtAuthenticationFailureHandler;
+    private final JwtUserDetailsService jwtUserDetailsService;
+    private final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
+    private final JwtProvider jwtProvider;
 
     @Bean
+    @Order(2)
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
+                //jwt 사용하기에 세션 생성 xx
+                .sessionManagement(session -> session
+                        .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/api/signup").permitAll()
+                        .requestMatchers("/api/role").permitAll()
                         .anyRequest().authenticated())
         ;
 
@@ -52,6 +59,9 @@ public class SecurityConfig {
         AuthenticationManager authenticationManager = builder.build();
 
         http
+                //jwt 사용하기에 세션 생성 xx
+                .sessionManagement(session -> session
+                        .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .csrf(AbstractHttpConfigurer::disable)
                 .securityMatcher("/api/login/**")
                 .authorizeHttpRequests(auth -> auth
@@ -59,18 +69,25 @@ public class SecurityConfig {
                         .requestMatchers("/api/login").permitAll()
                         .anyRequest().authenticated()
                 )
-                .addFilterBefore(jwtAuthenticationFilter(http, authenticationManager), UsernamePasswordAuthenticationFilter.class)
+                .addFilterBefore(jwtAuthorizationFilter(), UsernamePasswordAuthenticationFilter.class)
+                .addFilterAfter(jwtAuthenticationFilter(http, authenticationManager), JwtAuthorizationFilter.class)
                 .authenticationManager(authenticationManager)
                 .exceptionHandling(exception -> exception
+                        .authenticationEntryPoint(jwtAuthenticationEntryPoint)
                         .accessDeniedHandler(jwtDeniedHandler))
         ;
 
         return http.build();
     }
+    private JwtAuthorizationFilter jwtAuthorizationFilter(){
+        JwtAuthorizationFilter jwtAuthorizationFilter = new JwtAuthorizationFilter(jwtProvider, jwtUserDetailsService);
+        return jwtAuthorizationFilter;
+    }
 
     private JwtAuthenticationFilter jwtAuthenticationFilter(HttpSecurity http, AuthenticationManager authenticationManager){
         JwtAuthenticationFilter jwtAuthenticationFilter = new JwtAuthenticationFilter();
         jwtAuthenticationFilter.setAuthenticationManager(authenticationManager);
+        jwtAuthenticationFilter.setAuthenticationFailureHandler(jwtAuthenticationFailureHandler);
         jwtAuthenticationFilter.setAuthenticationSuccessHandler(jwtAuthenticationSuccessHandler);
         return jwtAuthenticationFilter;
     }

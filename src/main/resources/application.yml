@@ -6,7 +6,7 @@ spring:
 
   jpa:
     hibernate:
-      ddl-auto: update
+      ddl-auto: create
     properties:
       hibernate:
         format_sql: true
@@ -16,5 +16,9 @@ spring:
 logging.level:
   org.hibernate.SQL: debug
   org.hibernate.type.descriptor.BasicBinder: trace
+
+jwt:
+  secret:
+    key: amVvbmdod2EncyBwcm9qZWN0IHNlY3JldGtleS4uIOq3uCDriITqtazrj4Qg7J20IO2CpOulvCDtkoAg7IiYIOyXhuuLpC4uIOyepeuLtO2VnOuLpA==
 #  org.apache.coyote.http11 : debug
 #  http ?? ??? ??
