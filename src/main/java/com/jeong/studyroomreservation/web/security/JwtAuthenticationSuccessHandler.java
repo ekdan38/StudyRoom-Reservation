@@ -1,6 +1,7 @@
 package com.jeong.studyroomreservation.web.security;
 
 import com.jeong.studyroomreservation.domain.dto.UserDto;
+import com.jeong.studyroomreservation.domain.entity.UserRole;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -23,20 +24,28 @@ public class JwtAuthenticationSuccessHandler implements AuthenticationSuccessHan
 
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException, ServletException {
+        //password를 null로
         log.info("JwtAuthenticationSuccessHandler");
         UserDto userDto = (UserDto)authentication.getPrincipal();
         userDto.setPassword(null);
 
+        //로그인 유지를 위해 SecurityContextHolder에다가 Authentication객체 설정
         log.info("userDto.getLoginId() = {}", userDto.getLoginId());
         log.info("userDto.getRole() = {}", userDto.getRole());
         SecurityContextHolder.getContext().setAuthentication(authentication);
+
+        //유미 코드
+        String accessToken = jwtUtils.createToken("access", userDto);
+        String refreshToken = jwtUtils.createToken("refresh", userDto);
+
+
         SecurityContext context = SecurityContextHolder.getContextHolderStrategy().getContext();
-
-
         UserDto principal = (UserDto)context.getAuthentication().getPrincipal();
         log.info(principal.getClass().toString());
         log.info(principal.getName());
-        String token = jwtUtils.createToken(userDto);
-        jwtUtils.addJwtToCookie(token, response);
+//
+//        //토큰 생성
+//        String token = jwtUtils.createToken(userDto);
+//        jwtUtils.addJwtToCookie(token, response);
     }
 }

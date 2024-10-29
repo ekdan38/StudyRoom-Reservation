@@ -34,11 +34,11 @@ public class JwtUtils {
     public static final String BEARER_TYPE = "Bearer";
 
     // 토큰 만료시간
-    private final long ACCESS_TOKEN_EXPIRATION_TIME = 60 * 60 * 1000L; // 60분
+    private final long ACCESS_TOKEN_EXPIRATION_TIME = 60 * 10 * 1000L; // 60분
     // Refresh 토큰
     public static final String REFRESH_HEADER = "Refresh";
     // Refresh 토큰 만료 시간
-    private final long REFRESH_TOKEN_EXPIRATION_TIME = 60 * 60 * 1000L; // 60분
+    private final long REFRESH_TOKEN_EXPIRATION_TIME = 60 * 60 * 24 * 1000L; // 60분
 
 
     @Value("${jwt.secret.key}")
@@ -53,33 +53,19 @@ public class JwtUtils {
     }
 
     // 토큰 생성
-    public TokenDto createToken(UserDto userDto) {
+    public String createToken(String category, UserDto userDto) {
         Date date = new Date();
 
-        String accessToken =
+        return
                 BEARER_PREFIX +
                         Jwts.builder()
+                                .claim("category", "access")
                                 .claim(AUTHORIZATION_KEY, userDto.getRole()) // 사용자 권한
                                 .setSubject(userDto.getLoginId()) // 사용자 식별자값(ID)
                                 .setExpiration(new Date(date.getTime() + ACCESS_TOKEN_EXPIRATION_TIME)) // 만료 시간
                                 .setIssuedAt(date) // 발급일
                                 .signWith(key, signatureAlgorithm) // 암호화 알고리즘
                                 .compact();
-        String refreshToken =
-                        Jwts.builder()
-                                .setSubject(userDto.getLoginId()) // 사용자 식별자값(ID)
-                                .setExpiration(new Date(date.getTime() + REFRESH_TOKEN_EXPIRATION_TIME)) // 만료 시간
-                                .setIssuedAt(date) // 발급일
-                                .signWith(key) // 암호화 알고리즘
-                                .compact();
-
-        return TokenDto.builder()
-                .grantType(BEARER_TYPE)
-                .authorizationType(AUTHORIZATION_HEADER)
-                .accessToken(accessToken)
-                .accessTokenExpiresIn(new Date(date.getTime() + ACCESS_TOKEN_EXPIRATION_TIME).getTime())
-                .refreshToken(refreshToken)
-                .build();
     }
 
     // JWT Cookie 에 저장
@@ -105,6 +91,7 @@ public class JwtUtils {
         log.error("Not Found Token");
         throw new NullPointerException("Not Found Token");
     }
+
 
     // 토큰 검증
     public boolean validateToken(String token) {
@@ -144,4 +131,5 @@ public class JwtUtils {
         }
         return null;
     }
+
 }
