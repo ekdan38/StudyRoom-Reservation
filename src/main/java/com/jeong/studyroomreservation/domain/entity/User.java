@@ -16,7 +16,7 @@ public class User {
     private Long id;
 
     @Column(nullable = false, unique = true)
-    private String loginId;
+    private String username;
 
     @Column(nullable = false)
     private String password;
@@ -36,8 +36,8 @@ public class User {
     @Enumerated(EnumType.STRING)
     private UserRole role;
 
-    private User(String loginId, String password, String name, String email, String phoneNumber, UserRole role) {
-        this.loginId = loginId;
+    private User(String username, String password, String name, String email, String phoneNumber, UserRole role) {
+        this.username = username;
         this.password = password;
         this.name = name;
         this.email = email;
@@ -46,6 +46,6 @@ public class User {
     }
 
     public static User createUser(UserDto dto){
-        return new User(dto.getLoginId(), dto.getPassword(), dto.getName(), dto.getEmail(), dto.getPhoneNumber(), dto.getRole());
+        return new User(dto.getUsername(), dto.getPassword(), dto.getName(), dto.getEmail(), dto.getPhoneNumber(), dto.getRole());
     }
 }

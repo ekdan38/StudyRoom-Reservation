@@ -4,7 +4,7 @@ import com.jeong.studyroomreservation.domain.dto.UserDto;
 import com.jeong.studyroomreservation.domain.entity.User;
 import com.jeong.studyroomreservation.domain.error.ErrorCode;
 import com.jeong.studyroomreservation.domain.error.exception.EmailAlreadyExistsException;
-import com.jeong.studyroomreservation.domain.error.exception.LoginIdAlreadyExistsException;
+import com.jeong.studyroomreservation.domain.error.exception.UsernameAlreadyExistsException;
 import com.jeong.studyroomreservation.domain.mapper.UserMapper;
 import com.jeong.studyroomreservation.domain.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -13,7 +13,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 @Service
-@Slf4j(topic = "userService")
+@Slf4j(topic = "[UserService]")
 @RequiredArgsConstructor
 public class UserService {
 
@@ -26,23 +26,22 @@ public class UserService {
         requestDto.setPassword(passwordEncoder.encode(requestDto.getPassword()));
 
         // loginId 중복 조회
-        String loginId = requestDto.getLoginId();
+        String username = requestDto.getUsername();
 
-        if(userRepository.existsByLoginId(loginId)){
-            log.error("Exist LoginId = {}", loginId);
-            throw new LoginIdAlreadyExistsException(ErrorCode.LOGINID_ALREADY_EXISTS);
+        if(userRepository.existsByUsername(username)){
+            log.error("Exists username = {}", username);
+            throw new UsernameAlreadyExistsException(ErrorCode.USERNAME_ALREADY_EXISTS);
         }
 
         String email = requestDto.getEmail();
         if(userRepository.existsByEmail(email)){
-            log.error("Exist Email = {}", email);
-//            throw new EmailAlreadyExistsException("Exist Email" + email);
+            log.error("Exists Email = {}", email);
             throw new EmailAlreadyExistsException(ErrorCode.EMAIL_ALREADY_EXISTS);
         }
 
         // User 저장
         User user = User.createUser(requestDto);
-        return userMapper.entityToSignupDto(userRepository.save(user));
+        return userMapper.userToUserDto(userRepository.save(user));
     }
 
 }

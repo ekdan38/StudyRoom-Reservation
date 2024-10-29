@@ -9,7 +9,7 @@ public class UserDto {
 
     private Long id;
 
-    private String loginId;
+    private String username;
 
     @JsonIgnore
     private String password;
@@ -22,8 +22,8 @@ public class UserDto {
 
     private UserRole role;
 
-    public UserDto(String loginId, String password, String name, String email, String phoneNumber, UserRole userRole) {
-        this.loginId = loginId;
+    public UserDto(String username, String password, String name, String email, String phoneNumber, UserRole userRole) {
+        this.username = username;
         this.password = password;
         this.name = name;
         this.email = email;
@@ -31,9 +31,9 @@ public class UserDto {
         this.role = userRole;
     }
 
-    public UserDto(Long id, String loginId, String password, String name, String email, String phoneNumber, UserRole role) {
+    public UserDto(Long id, String username, String password, String name, String email, String phoneNumber, UserRole role) {
         this.id = id;
-        this.loginId = loginId;
+        this.username = username;
         this.password = password;
         this.name = name;
         this.email = email;

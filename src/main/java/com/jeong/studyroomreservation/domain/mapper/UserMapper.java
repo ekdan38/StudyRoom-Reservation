@@ -17,7 +17,7 @@ public class UserMapper {
     public UserDto SingnupRequestDtoToUserDto(SignupRequestDto requestDto){
 
         return new UserDto(
-                requestDto.getLoginId(),
+                requestDto.getUsername(),
                 requestDto.getPassword(),
                 requestDto.getName(),
                 requestDto.getEmail(),
@@ -26,10 +26,10 @@ public class UserMapper {
     }
 
     // User -> UserDto
-    public UserDto entityToSignupDto(User user){
+    public UserDto userToUserDto(User user){
         return new UserDto(
                 user.getId(),
-                user.getLoginId(),
+                user.getUsername(),
                 user.getPassword(),
                 user.getName(),
                 user.getEmail(),

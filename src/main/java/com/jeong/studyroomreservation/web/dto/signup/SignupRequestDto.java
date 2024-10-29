@@ -14,7 +14,7 @@ public class SignupRequestDto {
     @NotBlank
     @Size(min = 6, max = 20)
     @Pattern(regexp = "^[a-zA-Z0-9]+$", message = "loginId는 영어 대소문자와 숫자만 허용됩니다.") // 영어 대소문자, 숫자만 허용
-    private String loginId;
+    private String username;
 
     @NotBlank
     @Size(min = 8, max = 20)
