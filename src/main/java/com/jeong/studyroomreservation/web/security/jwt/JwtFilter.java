@@ -47,13 +47,12 @@ public class JwtFilter extends OncePerRequestFilter {
             jwtUtil.isExpired(accessToken);
         } catch (ExpiredJwtException e) {
 
-            response.setStatus(401);
+            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
             response.setContentType(MediaType.APPLICATION_JSON_VALUE);
             response.setCharacterEncoding("UTF-8");
-            Map<String, String> errorMessage = new HashMap<>();
-            errorMessage.put("message", "Access token expired");
-            response.getWriter().write(objectMapper.writeValueAsString(errorMessage));
-
+            Map<String, Object> responseBody = new HashMap<>();
+            responseBody.put("message", "Access token expired");
+            response.getWriter().write(objectMapper.writeValueAsString(responseBody));
             return;
         }
 
@@ -62,12 +61,12 @@ public class JwtFilter extends OncePerRequestFilter {
 
         if (!category.equals("access")) {
 
-            response.setStatus(401);
+            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
             response.setContentType(MediaType.APPLICATION_JSON_VALUE);
             response.setCharacterEncoding("UTF-8");
-            Map<String, String> errorMessage = new HashMap<>();
-            errorMessage.put("message", "Invalid access token");
-            response.getWriter().write(objectMapper.writeValueAsString(errorMessage));
+            Map<String, String> responseBody = new HashMap<>();
+            responseBody.put("message", "Invalid access token");
+            response.getWriter().write(objectMapper.writeValueAsString(responseBody));
 
             return;
         }

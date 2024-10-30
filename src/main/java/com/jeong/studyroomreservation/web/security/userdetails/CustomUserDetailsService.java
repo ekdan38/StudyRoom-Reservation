@@ -6,6 +6,7 @@ import com.jeong.studyroomreservation.domain.error.ErrorCode;
 import com.jeong.studyroomreservation.domain.mapper.UserMapper;
 import com.jeong.studyroomreservation.domain.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -17,7 +18,7 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
-
+@Slf4j(topic = "[CustomUserDetailsService]")
 public class CustomUserDetailsService implements UserDetailsService {
 
     private final UserRepository userRepository;

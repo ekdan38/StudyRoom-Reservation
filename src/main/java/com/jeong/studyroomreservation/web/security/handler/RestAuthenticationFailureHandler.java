@@ -1,6 +1,7 @@
 package com.jeong.studyroomreservation.web.security.handler;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.jeong.studyroomreservation.web.dto.ResponseDto;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -27,17 +28,17 @@ public class RestAuthenticationFailureHandler implements AuthenticationFailureHa
         //인증 실패 로직
         log.error("AuthenticationFailed = {}", exception.getMessage());
 
-        response.setStatus(401);
+        response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
         response.setContentType(MediaType.APPLICATION_JSON_VALUE);
         response.setCharacterEncoding("UTF-8");
 
-        Map<String, String> errorMessage = new HashMap<>();
-        errorMessage.put("message", "AuthenticationFailed");
-        errorMessage.put("errorMessage", exception.getMessage());
+        Map<String, Object> data = new HashMap<>();
+        data.put("errorMessage", exception.getMessage());
 
-        String responseBody = objectMapper.writeValueAsString(errorMessage);
-        response.getWriter().write(responseBody);
+        ResponseDto<Map<String, Object>> responseBody =
+                new ResponseDto<>("Authentication Failed", data);
 
+        response.getWriter().write(objectMapper.writeValueAsString(responseBody));
 
     }
 }

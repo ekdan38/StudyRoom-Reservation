@@ -1,6 +1,7 @@
 package com.jeong.studyroomreservation.web.security.handler;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.jeong.studyroomreservation.web.dto.ResponseDto;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -25,16 +26,18 @@ public class RestAuthenticationDeniedHandler implements AccessDeniedHandler {
         // AccessDenied 처리
         log.error("AccessDenied = {}", accessDeniedException.getMessage());
 
-        response.setStatus(403);
+        response.setStatus(HttpServletResponse.SC_FORBIDDEN);
         response.setContentType(MediaType.APPLICATION_JSON_VALUE);
         response.setCharacterEncoding("UTF-8");
 
-        Map<String, String> errorMessage = new HashMap<>();
-        errorMessage.put("message", "AccessDenied");
-        errorMessage.put("errorMessage", accessDeniedException.getMessage());
-        errorMessage.put("path", request.getRequestURI());
+        Map<String, Object> data = new HashMap<>();
+        data.put("errorMessage", accessDeniedException.getMessage());
+        data.put("path", request.getRequestURI());
 
-        String responseBody = objectMapper.writeValueAsString(errorMessage);
-        response.getWriter().write(responseBody);
+        ResponseDto<Map<String, Object>> responseBody =
+                new ResponseDto<>("AccessDenied", data);
+
+        response.getWriter().write(objectMapper.writeValueAsString(responseBody));
+
     }
 }

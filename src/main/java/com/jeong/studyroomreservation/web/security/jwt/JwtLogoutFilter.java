@@ -18,6 +18,8 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
+import static jakarta.servlet.http.HttpServletResponse.*;
+
 @RequiredArgsConstructor
 public class JwtLogoutFilter extends GenericFilterBean {
 
@@ -62,7 +64,7 @@ public class JwtLogoutFilter extends GenericFilterBean {
         //refresh null check
         if (refresh == null) {
 
-            response(response, "Refresh Token is null");
+            responseBody(SC_BAD_REQUEST,response, "Refresh Token is null");
             return;
         }
 
@@ -72,7 +74,7 @@ public class JwtLogoutFilter extends GenericFilterBean {
         } catch (ExpiredJwtException e) {
 
             //response status code
-            response(response, "Refresh token expired");
+            responseBody(SC_BAD_REQUEST, response, "Refresh token expired");
             return;
         }
 
@@ -80,7 +82,7 @@ public class JwtLogoutFilter extends GenericFilterBean {
         String category = jwtUtil.getCategory(refresh);
         if (!category.equals("refresh")) {
 
-            response(response, "Invalid refresh token");
+            responseBody(SC_BAD_REQUEST, response, "Invalid refresh token");
             return;
         }
 
@@ -88,7 +90,7 @@ public class JwtLogoutFilter extends GenericFilterBean {
         Boolean isExist = refreshRepository.existsByRefresh(refresh);
         if (!isExist) {
 
-            response(response, "Invalid refresh token");
+            responseBody(SC_BAD_REQUEST, response, "Invalid refresh token");
             return;
         }
 
@@ -102,16 +104,16 @@ public class JwtLogoutFilter extends GenericFilterBean {
         cookie.setPath("/");
 
         response.addCookie(cookie);
-        response.setStatus(HttpServletResponse.SC_OK);
+        responseBody(SC_OK, response, "Logout Success");
     }
 
-    private void response(HttpServletResponse response, String Invalid_refresh_token) throws IOException {
-        response.setStatus(400);
+    private void responseBody(int httpStatus, HttpServletResponse response, String message) throws IOException {
+        response.setStatus(httpStatus);
         response.setContentType(MediaType.APPLICATION_JSON_VALUE);
         response.setCharacterEncoding("UTF-8");
-        Map<String, String> errorMessage = new HashMap<>();
-        errorMessage.put("message", Invalid_refresh_token);
-        response.getWriter().write(objectMapper.writeValueAsString(errorMessage));
+        Map<String, String> responseBody = new HashMap<>();
+        responseBody.put("message", message);
+        response.getWriter().write(objectMapper.writeValueAsString(responseBody));
         return;
     }
 }

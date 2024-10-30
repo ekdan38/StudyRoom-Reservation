@@ -18,3 +18,6 @@ logging.level:
   org.hibernate.type.descriptor.BasicBinder: trace
 #  org.apache.coyote.http11 : debug
 #  http ?? ??? ??
+jwt:
+  secret:
+    key: amVvbmdod2EncyBwcm9qZWN0IHNlY3JldGtleS4uIOq3uCDriITqtazrj4Qg7J20IO2CpOulvCDtkoAg7IiYIOyXhuuLpC4uIOyepeuLtO2VnOuLpA==

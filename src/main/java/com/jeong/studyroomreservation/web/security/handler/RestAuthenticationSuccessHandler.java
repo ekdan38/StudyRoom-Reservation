@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.jeong.studyroomreservation.domain.dto.UserDto;
 import com.jeong.studyroomreservation.domain.entity.Refresh;
 import com.jeong.studyroomreservation.domain.repository.RefreshRepository;
+import com.jeong.studyroomreservation.web.dto.ResponseDto;
 import com.jeong.studyroomreservation.web.security.jwt.JwtUtil;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.Cookie;
@@ -34,7 +35,7 @@ public class RestAuthenticationSuccessHandler implements AuthenticationSuccessHa
         //여기서 jwt 토큰 발급
         //유저 정보
         UserDto userDto = (UserDto)authentication.getPrincipal();
-        String username = userDto.getName();
+        String username = userDto.getUsername();
         String role = userDto.getRole().toString();
 
         //토큰 생성
@@ -47,12 +48,17 @@ public class RestAuthenticationSuccessHandler implements AuthenticationSuccessHa
         //응답 설정
         response.setHeader("access", access);
         response.addCookie(createCookie("refresh", refresh));
-        response.setStatus(200);
+        response.setStatus(HttpServletResponse.SC_OK);
         response.setContentType(MediaType.APPLICATION_JSON_VALUE);
+
         response.setCharacterEncoding("UTF-8");
-        Map<String, Object> message = new HashMap<>();
-        message.put("message", "Token Issuance Completed");
-        response.getWriter().write(objectMapper.writeValueAsString(message));
+        Map<String, Object> data = new HashMap<>();
+        data.put("token", "Token Issuance Completed");
+
+        ResponseDto<Map<String, Object>> responseBody =
+                new ResponseDto<>("Authentication Success", data);
+
+        response.getWriter().write(objectMapper.writeValueAsString(responseBody));
     }
 
     private void addRefreshEntity(String username, String refresh, Long expiredMs) {

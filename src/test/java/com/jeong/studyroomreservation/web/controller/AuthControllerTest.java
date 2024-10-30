@@ -5,7 +5,9 @@ import com.jeong.studyroomreservation.domain.dto.UserDto;
 import com.jeong.studyroomreservation.domain.error.ErrorCode;
 import com.jeong.studyroomreservation.domain.mapper.UserMapper;
 import com.jeong.studyroomreservation.domain.service.UserService;
+import com.jeong.studyroomreservation.web.TestConst;
 import com.jeong.studyroomreservation.web.dto.signup.SignupRequestDto;
+import com.jeong.studyroomreservation.web.security.jwt.JwtUtil;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -20,6 +22,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.transaction.annotation.Transactional;
 
+import static com.jeong.studyroomreservation.web.TestConst.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -43,6 +46,8 @@ class AuthControllerTest {
     @Autowired
     UserMapper userMapper;
 
+    @Autowired
+    JwtUtil jwtUtil;
 
 
     @Test
@@ -51,11 +56,11 @@ class AuthControllerTest {
     public void signup_Success() throws Exception {
         //given
         SignupRequestDto signupRequestDto = new SignupRequestDto(
-                "testId",
+                getUniqueUsername(),
                 "testpassword@",
                 "testName",
-                "test@gmail.com",
-                "010-6261-2548",
+                getUniqueEmail(),
+                getUniquePhoneNumber(),
                 false,
                 false
         );
@@ -77,23 +82,25 @@ class AuthControllerTest {
     @DisplayName("회원 가입 실패_loginId 가 이미 존재함")
     public void sigunup_fail_exists_loginId() throws Exception {
         //given
+        String username = getUniqueUsername();
+
         SignupRequestDto signupRequestDto1 = new SignupRequestDto(
-                "testId",
+                username,
                 "testpwd@",
                 "test",
-                "test@gmail.com",
-                "010-0000-0000",
+                getUniqueEmail(),
+                getUniquePhoneNumber(),
                 false,
                 false);
         UserDto userDto = userMapper.SingnupRequestDtoToUserDto(signupRequestDto1);
         userService.signup(userDto);
 
         SignupRequestDto signupRequestDto2 = new SignupRequestDto(
-                "testId",
+                username,
                 "testpwd@",
                 "test",
-                "test2@gmail.com",
-                "010-0000-0000",
+                getUniqueEmail(),
+                getUniquePhoneNumber(),
                 false,
                 false);
 
@@ -107,8 +114,8 @@ class AuthControllerTest {
         perform
                 .andDo(print())
                 .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("message").value(ErrorCode.LOGINID_ALREADY_EXISTS.getMessage()))
-                .andExpect(jsonPath("code").value(ErrorCode.LOGINID_ALREADY_EXISTS.getCode()));
+                .andExpect(jsonPath("message").value(ErrorCode.USERNAME_ALREADY_EXISTS.getMessage()))
+                .andExpect(jsonPath("code").value(ErrorCode.USERNAME_ALREADY_EXISTS.getCode()));
 
     }
 
@@ -117,23 +124,24 @@ class AuthControllerTest {
     @DisplayName("회원 가입 실패_email이 이미 존재함")
     public void sigunup_fail_exists_email() throws Exception {
         //given
+        String email = getUniqueEmail();
         SignupRequestDto signupRequestDto1 = new SignupRequestDto(
-                "testId",
+                getUniqueUsername(),
                 "testpwd@",
                 "test",
-                "test@gmail.com",
-                "010-0000-0000",
+                email,
+                getUniquePhoneNumber(),
                 false,
                 false);
         UserDto userDto = userMapper.SingnupRequestDtoToUserDto(signupRequestDto1);
         userService.signup(userDto);
 
         SignupRequestDto signupRequestDto2 = new SignupRequestDto(
-                "testId2",
+                getUniqueUsername(),
                 "testpwd@",
                 "test",
-                "test@gmail.com",
-                "010-0000-0000",
+                email,
+                getUniquePhoneNumber(),
                 false,
                 false);
 
@@ -149,6 +157,47 @@ class AuthControllerTest {
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("message").value(ErrorCode.EMAIL_ALREADY_EXISTS.getMessage()))
                 .andExpect(jsonPath("code").value(ErrorCode.EMAIL_ALREADY_EXISTS.getCode()));
+
+    }
+
+    @Test
+    @Transactional
+    @DisplayName("회원 가입 실패_phoneNumber 이미 존재함")
+    public void sigunup_fail_exists_phoneNumber() throws Exception {
+        //given
+        String phoneNumber = getUniquePhoneNumber();
+        SignupRequestDto signupRequestDto1 = new SignupRequestDto(
+                getUniqueUsername(),
+                "testpwd@",
+                "test",
+                getUniqueEmail(),
+                phoneNumber,
+                false,
+                false);
+        UserDto userDto = userMapper.SingnupRequestDtoToUserDto(signupRequestDto1);
+        userService.signup(userDto);
+
+        SignupRequestDto signupRequestDto2 = new SignupRequestDto(
+                getUniqueUsername(),
+                "testpwd@",
+                "test",
+                getUniqueEmail(),
+                phoneNumber,
+                false,
+                false);
+
+        //when
+        ResultActions perform = mockMvc.perform(post("/api/signup")
+                .accept(MediaType.APPLICATION_JSON)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(signupRequestDto2)));
+
+        //then
+        perform
+                .andDo(print())
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("message").value(ErrorCode.PHONE_NUMBER_ALREADY_EXISTS.getMessage()))
+                .andExpect(jsonPath("code").value(ErrorCode.PHONE_NUMBER_ALREADY_EXISTS.getCode()));
 
     }
 
@@ -169,8 +218,8 @@ class AuthControllerTest {
                 loginId,
                 "testpassword@",
                 "test",
-                "test@gmail.com",
-                "010-0000-0000",
+                getUniqueEmail(),
+                getUniquePhoneNumber(),
                 false,
                 false);
 
@@ -194,11 +243,11 @@ class AuthControllerTest {
     public void signup_fail_invalid_passwordField(String password) throws Exception {
         //given
         SignupRequestDto requestDto = new SignupRequestDto(
-                "testId",
+                getUniqueUsername(),
                 password,
                 "test",
-                "test@gmail.com",
-                "010-0000-0000",
+                getUniqueEmail(),
+                getUniquePhoneNumber(),
                 false,
                 false
         );
@@ -223,11 +272,11 @@ class AuthControllerTest {
     public void signup_fail_invalid_nameField(String name) throws Exception {
         //given
         SignupRequestDto requestDto = new SignupRequestDto(
-                "testId",
+                getUniqueUsername(),
                 "testpassword@",
                 name,
-                "test@gmail.com",
-                "010-0000-0000",
+                getUniqueEmail(),
+                getUniquePhoneNumber(),
                 false,
                 false
         );
@@ -250,11 +299,11 @@ class AuthControllerTest {
     public void signup_fail_invalid_emailField(String email) throws Exception {
         //given
         SignupRequestDto requestDto = new SignupRequestDto(
-                "testId",
+                getUniqueUsername(),
                 "testpassword@",
                 "test",
                 email,
-                "010-0000-0000",
+                getUniquePhoneNumber(),
                 false,
                 false
         );
@@ -275,14 +324,14 @@ class AuthControllerTest {
     })
     @Transactional
     @DisplayName("회원가입 실패_phoneNumber 오류")
-    public void signup_fail_invalid_phoneNumberField(String email) throws Exception {
+    public void signup_fail_invalid_phoneNumberField(String phoneNumber) throws Exception {
         //given
         SignupRequestDto requestDto = new SignupRequestDto(
-                "testId",
+                getUniqueUsername(),
                 "testpassword@",
                 "test",
-                email,
-                "010-0000-0000",
+                getUniqueEmail(),
+                phoneNumber,
                 false,
                 false
         );

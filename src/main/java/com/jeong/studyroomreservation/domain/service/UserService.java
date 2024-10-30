@@ -4,6 +4,7 @@ import com.jeong.studyroomreservation.domain.dto.UserDto;
 import com.jeong.studyroomreservation.domain.entity.User;
 import com.jeong.studyroomreservation.domain.error.ErrorCode;
 import com.jeong.studyroomreservation.domain.error.exception.EmailAlreadyExistsException;
+import com.jeong.studyroomreservation.domain.error.exception.PhoneNumberAlreadyExistsException;
 import com.jeong.studyroomreservation.domain.error.exception.UsernameAlreadyExistsException;
 import com.jeong.studyroomreservation.domain.mapper.UserMapper;
 import com.jeong.studyroomreservation.domain.repository.UserRepository;
@@ -27,7 +28,6 @@ public class UserService {
 
         // loginId 중복 조회
         String username = requestDto.getUsername();
-
         if(userRepository.existsByUsername(username)){
             log.error("Exists username = {}", username);
             throw new UsernameAlreadyExistsException(ErrorCode.USERNAME_ALREADY_EXISTS);
@@ -37,6 +37,13 @@ public class UserService {
         if(userRepository.existsByEmail(email)){
             log.error("Exists Email = {}", email);
             throw new EmailAlreadyExistsException(ErrorCode.EMAIL_ALREADY_EXISTS);
+        }
+
+        String phoneNumber = requestDto.getPhoneNumber();
+        if(userRepository.existsByPhoneNumber(phoneNumber)){
+            log.error("Exists phoneNumber = {}", username);
+            throw new PhoneNumberAlreadyExistsException(ErrorCode.PHONE_NUMBER_ALREADY_EXISTS);
+
         }
 
         // User 저장

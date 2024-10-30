@@ -1,6 +1,7 @@
 package com.jeong.studyroomreservation.web.exceptionhandler;
 
 import com.jeong.studyroomreservation.domain.error.ErrorCode;
+import com.jeong.studyroomreservation.domain.error.exception.PhoneNumberAlreadyExistsException;
 import com.jeong.studyroomreservation.web.dto.ErrorResponse;
 import com.jeong.studyroomreservation.domain.error.exception.EmailAlreadyExistsException;
 import com.jeong.studyroomreservation.domain.error.exception.UsernameAlreadyExistsException;
@@ -23,6 +24,12 @@ public class AuthExceptionHandler {
     public ResponseEntity<ErrorResponse> EmailAlreadyExists(Exception e){
         log.error("EmailAlreadyExistsException = {}", e.getMessage());
         return createErrorResponseEntity(ErrorCode.EMAIL_ALREADY_EXISTS);
+    }
+
+    @ExceptionHandler(PhoneNumberAlreadyExistsException.class)
+    public ResponseEntity<ErrorResponse> PhoneNumberAlreadyExists(Exception e){
+        log.error("PhoneNumberAlreadyExistsException = {}", e.getMessage());
+        return createErrorResponseEntity(ErrorCode.PHONE_NUMBER_ALREADY_EXISTS);
     }
 
     private ResponseEntity<ErrorResponse> createErrorResponseEntity(ErrorCode errorCode) {
