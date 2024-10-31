@@ -1,37 +1,28 @@
-package com.jeong.studyroomreservation.web.authentication;
+package com.jeong.studyroomreservation.web.auth;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.jeong.studyroomreservation.domain.dto.UserDto;
 import com.jeong.studyroomreservation.domain.entity.UserRole;
-import com.jeong.studyroomreservation.domain.repository.RefreshRepository;
 import com.jeong.studyroomreservation.domain.service.UserService;
-import com.jeong.studyroomreservation.web.TestConst;
 import com.jeong.studyroomreservation.web.security.dto.LoginDto;
 import com.jeong.studyroomreservation.web.security.jwt.JwtUtil;
 import jakarta.servlet.http.Cookie;
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.Clock;
-import java.time.Instant;
-import java.time.ZoneId;
-import java.time.temporal.ChronoUnit;
 import java.util.concurrent.TimeUnit;
 
 import static com.jeong.studyroomreservation.web.TestConst.*;
 import static org.assertj.core.api.Assertions.*;
-import static org.mockito.Mockito.when;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;

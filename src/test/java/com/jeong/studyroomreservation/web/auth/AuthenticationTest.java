@@ -1,4 +1,4 @@
-package com.jeong.studyroomreservation.web.authentication;
+package com.jeong.studyroomreservation.web.auth;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.jeong.studyroomreservation.domain.dto.UserDto;
@@ -83,7 +83,7 @@ public class AuthenticationTest {
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("message").value("Authentication Success"))
-                .andExpect(jsonPath("data.token").value("Token Issuance Completed"))
+                .andExpect(jsonPath("data.token").value("Token issuance Completed"))
                 .andExpect(header().exists("access"))
                 .andExpect(cookie().exists("refresh"))
                 .andReturn();

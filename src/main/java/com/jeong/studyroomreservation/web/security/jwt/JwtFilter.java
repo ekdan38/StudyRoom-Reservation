@@ -1,6 +1,8 @@
 package com.jeong.studyroomreservation.web.security.jwt;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.jeong.studyroomreservation.domain.dto.UserDto;
+import com.jeong.studyroomreservation.web.dto.ResponseDto;
 import com.jeong.studyroomreservation.web.security.AuthenticationToken.RestAuthenticationToken;
 import com.jeong.studyroomreservation.web.security.userdetails.CustomUserDetails;
 import com.jeong.studyroomreservation.web.security.userdetails.CustomUserDetailsService;
@@ -13,6 +15,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.MediaType;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
@@ -46,13 +49,7 @@ public class JwtFilter extends OncePerRequestFilter {
         try {
             jwtUtil.isExpired(accessToken);
         } catch (ExpiredJwtException e) {
-
-            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-            response.setContentType(MediaType.APPLICATION_JSON_VALUE);
-            response.setCharacterEncoding("UTF-8");
-            Map<String, Object> responseBody = new HashMap<>();
-            responseBody.put("message", "Access token expired");
-            response.getWriter().write(objectMapper.writeValueAsString(responseBody));
+            responseBody(response, "Invalid access token", "Access token expired");
             return;
         }
 
@@ -60,26 +57,38 @@ public class JwtFilter extends OncePerRequestFilter {
         String category = jwtUtil.getCategory(accessToken);
 
         if (!category.equals("access")) {
-
-            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-            response.setContentType(MediaType.APPLICATION_JSON_VALUE);
-            response.setCharacterEncoding("UTF-8");
-            Map<String, String> responseBody = new HashMap<>();
-            responseBody.put("message", "Invalid access token");
-            response.getWriter().write(objectMapper.writeValueAsString(responseBody));
-
+            responseBody(response, "Invalid access token", "Token is not access token");
             return;
         }
 
         // username, role 값을 획득
         String username = jwtUtil.getUsername(accessToken);
+        String role = jwtUtil.getRole(accessToken);
+        CustomUserDetails customUserDetails;
+        try{
+            customUserDetails = (CustomUserDetails) customUserDetailsService.loadUserByUsername(username);
+            UserDto userDto = customUserDetails.getUserDto();
+            // access token의 role이 다르면 응답
+            if(!userDto.getRole().name().equals(role)){
+                responseBody(response, "Invalid access token", "This access token has wrong role");
+                return;
+            }
+            RestAuthenticationToken restAuthenticationToken = new RestAuthenticationToken(customUserDetails.getUserDto(), null, customUserDetails.getAuthorities());
+            //로그인 유지
+            SecurityContextHolder.getContext().setAuthentication(restAuthenticationToken);
+            filterChain.doFilter(request, response);
+        }catch (UsernameNotFoundException e){
+            responseBody(response, "Invalid access token", e.getMessage());
+        }
 
-        CustomUserDetails customUserDetails = (CustomUserDetails) customUserDetailsService.loadUserByUsername(username);
-        RestAuthenticationToken restAuthenticationToken = new RestAuthenticationToken(customUserDetails.getUserDto(), null, customUserDetails.getAuthorities());
-
-        //로그인 유지
-        SecurityContextHolder.getContext().setAuthentication(restAuthenticationToken);
-
-        filterChain.doFilter(request, response);
+    }
+    private void responseBody(HttpServletResponse response, String message, String errorMessage) throws IOException {
+        response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+        response.setContentType(MediaType.APPLICATION_JSON_VALUE);
+        response.setCharacterEncoding("UTF-8");
+        Map<String, String> body = new HashMap<>();
+        body.put("errorMessage", errorMessage);
+        ResponseDto<Object> responseBody = new ResponseDto<>(message, body);
+        response.getWriter().write(objectMapper.writeValueAsString(responseBody));
     }
 }

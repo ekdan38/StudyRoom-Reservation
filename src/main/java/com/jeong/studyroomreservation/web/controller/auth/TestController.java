@@ -1,4 +1,4 @@
-package com.jeong.studyroomreservation.web.controller;
+package com.jeong.studyroomreservation.web.controller.auth;
 
 import com.jeong.studyroomreservation.domain.dto.UserDto;
 import com.jeong.studyroomreservation.domain.entity.UserRole;

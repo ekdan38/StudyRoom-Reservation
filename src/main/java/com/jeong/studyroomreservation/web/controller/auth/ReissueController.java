@@ -1,12 +1,8 @@
-package com.jeong.studyroomreservation.web.controller;
+package com.jeong.studyroomreservation.web.controller.auth;
 
-import com.jeong.studyroomreservation.domain.dto.UserDto;
 import com.jeong.studyroomreservation.domain.entity.Refresh;
-import com.jeong.studyroomreservation.domain.mapper.UserMapper;
 import com.jeong.studyroomreservation.domain.repository.RefreshRepository;
-import com.jeong.studyroomreservation.domain.service.UserService;
 import com.jeong.studyroomreservation.web.dto.ResponseDto;
-import com.jeong.studyroomreservation.web.dto.signup.SignupRequestDto;
 import com.jeong.studyroomreservation.web.security.jwt.JwtUtil;
 import io.jsonwebtoken.ExpiredJwtException;
 import jakarta.servlet.http.Cookie;
@@ -16,39 +12,22 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.context.SecurityContext;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.validation.BindingResult;
-import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.util.Date;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
 
 @RestController
-@Slf4j(topic = "authController")
+@Slf4j
 @RequiredArgsConstructor
-public class AuthController {
+public class ReissueController {
 
-    private final UserMapper userMapper;
-    private final UserService userService;
     private final JwtUtil jwtUtil;
     private final RefreshRepository refreshRepository;
 
-    @PostMapping("/api/signup")
-    public ResponseEntity<ResponseDto<?>> signup(@RequestBody @Validated SignupRequestDto requestDto, BindingResult bindingResult){
-        if(bindingResult.hasErrors()){
-            log.error("validation Error = {}", bindingResult);
-            ResponseDto<BindingResult> responseBody = new ResponseDto<>("Validation Error", bindingResult);
-            return ResponseEntity.badRequest().body(responseBody);
-        }
-        UserDto requestUserDto = userMapper.SingnupRequestDtoToUserDto(requestDto);
-        UserDto userDto = userService.signup(requestUserDto);
-        ResponseDto<UserDto> responseBody = new ResponseDto<>("Success Signup", userDto);
-        return ResponseEntity.ok().body(responseBody);
-    }
-
-    @PostMapping("/reissue")
+    @PostMapping("/api/reissue")
     public ResponseEntity<?> reissue(HttpServletRequest request, HttpServletResponse response) {
 
         //get refresh token
@@ -62,10 +41,12 @@ public class AuthController {
             }
         }
 
+        //토큰이 null
         if (refresh == null) {
 
-            //response status code
-            return new ResponseEntity<>("refresh token null", HttpStatus.BAD_REQUEST);
+            ResponseDto<Object> responseBody =
+                    getBadRequestResponseBody("Invalid refresh token", "Refresh token is null");
+            return ResponseEntity.badRequest().body(responseBody);
         }
 
         //expired check
@@ -73,8 +54,9 @@ public class AuthController {
             jwtUtil.isExpired(refresh);
         } catch (ExpiredJwtException e) {
 
-            //response status code
-            return new ResponseEntity<>("refresh token expired", HttpStatus.BAD_REQUEST);
+            ResponseDto<Object> responseBody
+                    = getBadRequestResponseBody("Invalid refresh token", "Refresh token expired");
+            return ResponseEntity.badRequest().body(responseBody);
         }
 
         // 토큰이 refresh인지 확인 (발급시 페이로드에 명시)
@@ -82,8 +64,9 @@ public class AuthController {
 
         if (!category.equals("refresh")) {
 
-            //response status code
-            return new ResponseEntity<>("invalid refresh token", HttpStatus.BAD_REQUEST);
+            ResponseDto<Object> responseBody
+                    = getBadRequestResponseBody("Invalid refresh token", "Token is not refresh token");
+            return ResponseEntity.badRequest().body(responseBody);
         }
 
         //DB에 저장되어 있는지 확인
@@ -91,7 +74,9 @@ public class AuthController {
         if (!isExist) {
 
             //response body
-            return new ResponseEntity<>("invalid refresh token", HttpStatus.BAD_REQUEST);
+            ResponseDto<Object> responseBody
+                    = getBadRequestResponseBody("Invalid refresh token", "Not exist in DB");
+            return ResponseEntity.badRequest().body(responseBody);
         }
 
         String username = jwtUtil.getUsername(refresh);
@@ -109,8 +94,19 @@ public class AuthController {
         response.setHeader("access", newAccess);
         response.addCookie(createCookie("refresh", newRefresh));
 
-        return new ResponseEntity<>(HttpStatus.OK);
+        HashMap<String, String> data = new LinkedHashMap<>();
+        data.put("token", "Access and Refresh token reissue Completed");
+        ResponseDto<Object> responseBody = new ResponseDto<>("Reissue Success", data);
+        return ResponseEntity.ok().body(responseBody);
     }
+
+    private ResponseDto<Object> getBadRequestResponseBody(String message, String errorMessage) {
+        HashMap<String, String> data = new LinkedHashMap<>();
+        data.put("errorMessage", errorMessage);
+        ResponseDto<Object> responseBody = new ResponseDto<>(message, data);
+        return responseBody;
+    }
+
     private Cookie createCookie(String key, String value) {
 
         Cookie cookie = new Cookie(key, value);

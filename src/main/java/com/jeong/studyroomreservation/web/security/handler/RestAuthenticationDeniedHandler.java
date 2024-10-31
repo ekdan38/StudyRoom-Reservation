@@ -13,6 +13,7 @@ import org.springframework.security.web.access.AccessDeniedHandler;
 
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 @Slf4j(topic = "[RestAuthenticationDeniedHandler]")
@@ -30,12 +31,12 @@ public class RestAuthenticationDeniedHandler implements AccessDeniedHandler {
         response.setContentType(MediaType.APPLICATION_JSON_VALUE);
         response.setCharacterEncoding("UTF-8");
 
-        Map<String, Object> data = new HashMap<>();
-        data.put("errorMessage", accessDeniedException.getMessage());
+        Map<String, Object> data = new LinkedHashMap<>();
+        data.put("errorMessage", "No authority");
         data.put("path", request.getRequestURI());
 
         ResponseDto<Map<String, Object>> responseBody =
-                new ResponseDto<>("AccessDenied", data);
+                new ResponseDto<>("Access denied", data);
 
         response.getWriter().write(objectMapper.writeValueAsString(responseBody));
 

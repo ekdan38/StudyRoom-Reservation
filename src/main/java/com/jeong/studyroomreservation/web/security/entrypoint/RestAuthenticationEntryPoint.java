@@ -1,6 +1,7 @@
 package com.jeong.studyroomreservation.web.security.entrypoint;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.jeong.studyroomreservation.web.dto.ResponseDto;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -28,13 +29,12 @@ public class RestAuthenticationEntryPoint implements AuthenticationEntryPoint {
         response.setContentType(MediaType.APPLICATION_JSON_VALUE);
         response.setCharacterEncoding("UTF-8");
 
-        Map<String, String> errorMessage = new HashMap<>();
-        errorMessage.put("message", "Access denied: authentication required");
-        errorMessage.put("errorMessage", authException.getMessage());
-        errorMessage.put("path", request.getRequestURI());
+        Map<String, String> data = new HashMap<>();
+        data.put("errorMessage", "Require authentication");
+        data.put("path", request.getRequestURI());
 
-        String responseBody = objectMapper.writeValueAsString(errorMessage);
-        response.getWriter().write(responseBody);
+        ResponseDto<Object> responseBody = new ResponseDto<>("Access denied", data);
+        response.getWriter().write(objectMapper.writeValueAsString(responseBody));
 
     }
 }

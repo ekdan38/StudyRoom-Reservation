@@ -56,8 +56,13 @@ public class SecurityConfig {
                         .requestMatchers("/css/**", "/images/**", "/js/**", "/favicon.*", "/*/icon-*").permitAll()
                         .requestMatchers("/api/signup").permitAll()
                         .requestMatchers("/api/logout").permitAll()
+                        .requestMatchers("/api/reissue").permitAll()
+                        .requestMatchers("/api/test").hasRole("MANAGER")
                         .anyRequest().authenticated()
                 )
+                .exceptionHandling(except -> except
+                        .authenticationEntryPoint(new RestAuthenticationEntryPoint(objectMapper))
+                        .accessDeniedHandler(new RestAuthenticationDeniedHandler(objectMapper)))
                 //"/api/logout" , "POST"
                 .addFilterBefore(new JwtLogoutFilter(jwtUtil, refreshRepository, objectMapper), LogoutFilter.class)
                 // 매 요청마다.

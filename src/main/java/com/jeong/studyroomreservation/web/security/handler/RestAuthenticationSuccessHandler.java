@@ -53,7 +53,7 @@ public class RestAuthenticationSuccessHandler implements AuthenticationSuccessHa
 
         response.setCharacterEncoding("UTF-8");
         Map<String, Object> data = new HashMap<>();
-        data.put("token", "Token Issuance Completed");
+        data.put("token", "Token issuance Completed");
 
         ResponseDto<Map<String, Object>> responseBody =
                 new ResponseDto<>("Authentication Success", data);

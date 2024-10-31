@@ -32,11 +32,10 @@ public class RestAuthenticationFailureHandler implements AuthenticationFailureHa
         response.setContentType(MediaType.APPLICATION_JSON_VALUE);
         response.setCharacterEncoding("UTF-8");
 
-        Map<String, Object> data = new HashMap<>();
-        data.put("errorMessage", exception.getMessage());
-
+        Map<String, Object> body = new HashMap<>();
+        body.put("errorMessage", exception.getMessage());
         ResponseDto<Map<String, Object>> responseBody =
-                new ResponseDto<>("Authentication Failed", data);
+                new ResponseDto<>("Authentication Failed", body);
 
         response.getWriter().write(objectMapper.writeValueAsString(responseBody));
 
