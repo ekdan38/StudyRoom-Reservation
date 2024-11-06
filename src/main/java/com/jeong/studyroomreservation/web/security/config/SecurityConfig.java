@@ -25,6 +25,7 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.authentication.logout.LogoutFilter;
+import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
 @Configuration
 @EnableWebSecurity
@@ -54,10 +55,17 @@ public class SecurityConfig {
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/css/**", "/images/**", "/js/**", "/favicon.*", "/*/icon-*").permitAll()
-                        .requestMatchers("/api/signup").permitAll()
-                        .requestMatchers("/api/logout").permitAll()
-                        .requestMatchers("/api/reissue").permitAll()
-                        .requestMatchers("/api/test").hasRole("MANAGER")
+                        .requestMatchers("/api/signup", "api/login","/api/logout","/api/reissue", "/error").permitAll()
+                        .requestMatchers(new AntPathRequestMatcher("/api/pending-companies", "POST")).hasRole("USER")
+                        .requestMatchers(new AntPathRequestMatcher("/api/pending-companies", "GET")).hasRole("SYSTEM_ADMIN")
+                        .requestMatchers(new AntPathRequestMatcher("/api/pending-companies/{id}", "PUT")).hasRole("SYSTEM_ADMIN")
+                        .requestMatchers(new AntPathRequestMatcher("/api/studyrooms", "POST")).hasRole("STUDYROOM_ADMIN")
+                        .requestMatchers(new AntPathRequestMatcher("/api/studyrooms", "GET")).hasRole("USER")
+                        .requestMatchers(new AntPathRequestMatcher("/api/studyrooms/{id}", "GET")).hasRole("USER")
+                        .requestMatchers(new AntPathRequestMatcher("/api/studyrooms/{id}", "PUT")).hasRole("STUDYROOM_MANAGER")
+                        .requestMatchers(new AntPathRequestMatcher("/api/studyrooms/{id}", "DELETE")).hasRole("STUDYROOM_ADMIN")
+                        .requestMatchers("/api/pending-companies/**").hasRole("SYSTEM_ADMIN")
+                        .requestMatchers("/api/test").hasRole("STUDYROOM_MANAGER")
                         .anyRequest().authenticated()
                 )
                 .exceptionHandling(except -> except
@@ -67,12 +75,7 @@ public class SecurityConfig {
                 .addFilterBefore(new JwtLogoutFilter(jwtUtil, refreshRepository, objectMapper), LogoutFilter.class)
                 // 매 요청마다.
                 .addFilterBefore(new JwtFilter(jwtUtil, customUserDetailsService, objectMapper), UsernamePasswordAuthenticationFilter.class)
-                //"/api/login" , "POST"
-//                .addFilterBefore(restAuthenticationFilter(authenticationManager), UsernamePasswordAuthenticationFilter.class)
-//                .authenticationManager(authenticationManager)
-//                .exceptionHandling(except -> except
-//                        .authenticationEntryPoint(new RestAuthenticationEntryPoint(objectMapper))
-//                        .accessDeniedHandler(new RestAuthenticationDeniedHandler(objectMapper)))
+
                 ;
         return http.build();
     }

@@ -10,12 +10,16 @@ spring:
     properties:
       hibernate:
         format_sql: true
-        show_sql: true
+        show_sql: false
         dialect: org.hibernate.dialect.MySQLDialect
 
 logging.level:
   org.hibernate.SQL: debug
+  org.springframework.transaction.interceptor: debug
+  org.springframework.orm.jpa.JpaTransactionManager: debug
   org.hibernate.type.descriptor.BasicBinder: trace
+  org.springframework.security: debug
+#  org.apache.coyote.http11: trace
 
 jwt:
   secret:

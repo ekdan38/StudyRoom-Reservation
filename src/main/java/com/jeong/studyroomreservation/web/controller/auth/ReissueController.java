@@ -1,6 +1,6 @@
 package com.jeong.studyroomreservation.web.controller.auth;
 
-import com.jeong.studyroomreservation.domain.entity.Refresh;
+import com.jeong.studyroomreservation.domain.entity.refresh.Refresh;
 import com.jeong.studyroomreservation.domain.repository.RefreshRepository;
 import com.jeong.studyroomreservation.web.dto.ResponseDto;
 import com.jeong.studyroomreservation.web.security.jwt.JwtUtil;
@@ -10,7 +10,6 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;

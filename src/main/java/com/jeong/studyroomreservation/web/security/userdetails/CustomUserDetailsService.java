@@ -1,9 +1,8 @@
 package com.jeong.studyroomreservation.web.security.userdetails;
 
 import com.jeong.studyroomreservation.domain.dto.UserDto;
-import com.jeong.studyroomreservation.domain.entity.User;
-import com.jeong.studyroomreservation.domain.error.ErrorCode;
-import com.jeong.studyroomreservation.domain.mapper.UserMapper;
+import com.jeong.studyroomreservation.domain.entity.user.User;
+import com.jeong.studyroomreservation.domain.entity.user.UserMapper;
 import com.jeong.studyroomreservation.domain.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -33,7 +32,7 @@ public class CustomUserDetailsService implements UserDetailsService {
         List<GrantedAuthority> authorities =
                 List.of(new SimpleGrantedAuthority(user.getRole().toString()));
 
-        UserDto userDto = userMapper.userToUserDto(user);
+        UserDto userDto = userMapper.entityToUserDto(user);
         return new CustomUserDetails(userDto, authorities);
     }
 }

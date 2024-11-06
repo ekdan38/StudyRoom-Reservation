@@ -1,6 +1,6 @@
 package com.jeong.studyroomreservation.domain;
 
-import com.jeong.studyroomreservation.domain.entity.UserRole;
+import com.jeong.studyroomreservation.domain.entity.user.UserRole;
 import com.jeong.studyroomreservation.web.dto.signup.SignupRequestDto;
 import org.springframework.stereotype.Component;
 
@@ -14,10 +14,10 @@ public class RoleAssigner {
         UserRole role = UserRole.ROLE_USER;
 
         if(requestDto.isManager()){
-            role = UserRole.ROLE_MANAGER;
+            role = UserRole.ROLE_STUDYROOM_MANAGER;
         }
         if(requestDto.isAdmin()){
-            role = UserRole.ROLE_ADMIN;
+            role = UserRole.ROLE_STUDYROOM_ADMIN;
         }
         return role;
     }

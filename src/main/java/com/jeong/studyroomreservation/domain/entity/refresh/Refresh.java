@@ -1,4 +1,4 @@
-package com.jeong.studyroomreservation.domain.entity;
+package com.jeong.studyroomreservation.domain.entity.refresh;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;

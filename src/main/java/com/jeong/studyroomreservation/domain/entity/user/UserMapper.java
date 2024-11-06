@@ -1,7 +1,6 @@
-package com.jeong.studyroomreservation.domain.mapper;
+package com.jeong.studyroomreservation.domain.entity.user;
 
 import com.jeong.studyroomreservation.domain.dto.UserDto;
-import com.jeong.studyroomreservation.domain.entity.User;
 import com.jeong.studyroomreservation.domain.RoleAssigner;
 import com.jeong.studyroomreservation.web.dto.signup.SignupRequestDto;
 import lombok.RequiredArgsConstructor;
@@ -13,8 +12,8 @@ public class UserMapper {
 
     private final RoleAssigner roleAssigner;
 
-    //SignupRequestDto -> UserDto
-    public UserDto SingnupRequestDtoToUserDto(SignupRequestDto requestDto){
+    //SignupRequestDto => UserDto
+    public UserDto requestDtoToUserDto(SignupRequestDto requestDto){
 
         return new UserDto(
                 requestDto.getUsername(),
@@ -25,8 +24,8 @@ public class UserMapper {
                 roleAssigner.checkUserRole(requestDto));
     }
 
-    // User -> UserDto
-    public UserDto userToUserDto(User user){
+    // UserEntity => UserDto
+    public UserDto entityToUserDto(User user){
         return new UserDto(
                 user.getId(),
                 user.getUsername(),
@@ -36,4 +35,9 @@ public class UserMapper {
                 user.getPhoneNumber(),
                 user.getRole());
     }
+    // UserDto => UserEntity
+    public User userDtoToEntity(UserDto userDto){
+        return User.dtoToEntity(userDto);
+    }
+
 }

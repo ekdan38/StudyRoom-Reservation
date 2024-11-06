@@ -19,8 +19,9 @@ public class BeanConfig {
     @Bean
     public RoleHierarchy hierarchy(){
         return RoleHierarchyImpl.fromHierarchy(
-                "ROLE_ADMIN > ROLE_MANAGER\n" +
-                        "ROLE_MANAGER > ROLE_USER\n" +
+                "ROLE_SYSTEM_ADMIN > ROLE_STUDYROOM_ADMIN\n" +
+                        "ROLE_STUDYROOM_ADMIN > ROLE_STUDYROOM_MANAGER\n" +
+                        "ROLE_STUDYROOM_MANAGER > ROLE_USER\n" +
                         "ROLE_USER > ROLE_ANONYMOUS");
     }
 }

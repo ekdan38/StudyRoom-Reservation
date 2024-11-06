@@ -1,16 +1,20 @@
-package com.jeong.studyroomreservation.domain.entity;
+package com.jeong.studyroomreservation.domain.entity.user;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.jeong.studyroomreservation.domain.dto.UserDto;
+import com.jeong.studyroomreservation.domain.entity.base.BaseEntity;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Entity
 @Table(name = "users")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
 @Getter
-public class User {
+public class User extends BaseEntity {
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -19,6 +23,7 @@ public class User {
     private String username;
 
     @Column(nullable = false)
+    @JsonIgnore
     private String password;
 
     @Column(nullable = false)
@@ -45,7 +50,29 @@ public class User {
         this.role = role;
     }
 
+    //==생성 메서드==//
     public static User createUser(UserDto dto){
-        return new User(dto.getUsername(), dto.getPassword(), dto.getName(), dto.getEmail(), dto.getPhoneNumber(), dto.getRole());
+        return new User(
+                dto.getUsername(),
+                dto.getPassword(),
+                dto.getName(),
+                dto.getEmail(),
+                dto.getPhoneNumber(),
+                dto.getRole());
+    }
+
+    static User dtoToEntity(UserDto dto){
+        return new User(
+                dto.getId(),
+                dto.getUsername(),
+                dto.getPassword(),
+                dto.getName(),
+                dto.getEmail(),
+                dto.getPhoneNumber(),
+                dto.getRole());
+    }
+
+    public void updateUserRole(UserRole userRole){
+        this.role = userRole;
     }
 }

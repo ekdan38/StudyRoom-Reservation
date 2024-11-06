@@ -1,9 +1,7 @@
 package com.jeong.studyroomreservation.web.controller.auth;
 
 import com.jeong.studyroomreservation.domain.dto.UserDto;
-import com.jeong.studyroomreservation.domain.entity.UserRole;
 import com.jeong.studyroomreservation.web.dto.ResponseDto;
-import org.apache.coyote.Response;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.context.SecurityContextHolder;

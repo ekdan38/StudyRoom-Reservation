@@ -7,27 +7,27 @@ import lombok.NoArgsConstructor;
 
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class ErrorResponse {
+public class ErrorResponseDto {
 
     private String message;
     private String code;
 
 
-    private ErrorResponse(final ErrorCode code) {
+    private ErrorResponseDto(final ErrorCode code) {
         this.message = code.getMessage();
         this.code = code.getCode();
     }
 
-    private ErrorResponse(final ErrorCode code, final String message) {
+    private ErrorResponseDto(final ErrorCode code, final String message) {
         this.message = message;
         this.code = code.getCode();
     }
 
-    public static ErrorResponse of(final ErrorCode code) {
-        return new ErrorResponse(code);
+    public static ErrorResponseDto of(final ErrorCode code) {
+        return new ErrorResponseDto(code);
     }
 
-    public static ErrorResponse of(final ErrorCode code, final String message) {
-        return new ErrorResponse(code, message);
+    public static ErrorResponseDto of(final ErrorCode code, final String message) {
+        return new ErrorResponseDto(code, message);
     }
 }

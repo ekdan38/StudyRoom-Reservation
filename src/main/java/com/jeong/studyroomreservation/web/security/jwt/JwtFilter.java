@@ -76,6 +76,7 @@ public class JwtFilter extends OncePerRequestFilter {
             RestAuthenticationToken restAuthenticationToken = new RestAuthenticationToken(customUserDetails.getUserDto(), null, customUserDetails.getAuthorities());
             //로그인 유지
             SecurityContextHolder.getContext().setAuthentication(restAuthenticationToken);
+
             filterChain.doFilter(request, response);
         }catch (UsernameNotFoundException e){
             responseBody(response, "Invalid access token", e.getMessage());

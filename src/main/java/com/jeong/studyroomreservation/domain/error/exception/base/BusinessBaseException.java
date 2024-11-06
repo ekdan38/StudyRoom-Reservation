@@ -1,4 +1,4 @@
-package com.jeong.studyroomreservation.domain.error.exception;
+package com.jeong.studyroomreservation.domain.error.exception.base;
 
 import com.jeong.studyroomreservation.domain.error.ErrorCode;
 

@@ -2,7 +2,7 @@ package com.jeong.studyroomreservation.web.security.handler;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.jeong.studyroomreservation.domain.dto.UserDto;
-import com.jeong.studyroomreservation.domain.entity.Refresh;
+import com.jeong.studyroomreservation.domain.entity.refresh.Refresh;
 import com.jeong.studyroomreservation.domain.repository.RefreshRepository;
 import com.jeong.studyroomreservation.web.dto.ResponseDto;
 import com.jeong.studyroomreservation.web.security.jwt.JwtUtil;
@@ -11,10 +11,8 @@ import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.stereotype.Component;
 

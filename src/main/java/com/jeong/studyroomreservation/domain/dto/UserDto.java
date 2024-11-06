@@ -1,10 +1,14 @@
 package com.jeong.studyroomreservation.domain.dto;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.jeong.studyroomreservation.domain.entity.UserRole;
+import com.jeong.studyroomreservation.domain.entity.user.UserRole;
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
+@AllArgsConstructor
+@NoArgsConstructor
 public class UserDto {
 
     private Long id;
@@ -31,13 +35,4 @@ public class UserDto {
         this.role = userRole;
     }
 
-    public UserDto(Long id, String username, String password, String name, String email, String phoneNumber, UserRole role) {
-        this.id = id;
-        this.username = username;
-        this.password = password;
-        this.name = name;
-        this.email = email;
-        this.phoneNumber = phoneNumber;
-        this.role = role;
-    }
 }

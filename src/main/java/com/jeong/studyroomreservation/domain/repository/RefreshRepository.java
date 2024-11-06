@@ -1,6 +1,6 @@
 package com.jeong.studyroomreservation.domain.repository;
 
-import com.jeong.studyroomreservation.domain.entity.Refresh;
+import com.jeong.studyroomreservation.domain.entity.refresh.Refresh;
 import jakarta.transaction.Transactional;
 import org.springframework.data.jpa.repository.JpaRepository;
 

@@ -2,7 +2,7 @@ package com.jeong.studyroomreservation.web.auth;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.jeong.studyroomreservation.domain.dto.UserDto;
-import com.jeong.studyroomreservation.domain.entity.UserRole;
+import com.jeong.studyroomreservation.domain.entity.user.UserRole;
 import com.jeong.studyroomreservation.domain.repository.RefreshRepository;
 import com.jeong.studyroomreservation.domain.service.UserService;
 import com.jeong.studyroomreservation.web.security.dto.LoginDto;
@@ -122,6 +122,25 @@ public class AuthenticationTest {
     @Transactional
     @DisplayName("로그인 실패_일치하는 password 없음")
     public void authentication_Fail_BadCredentialsException() throws Exception {
+        //given
+        String username = sharedUsername;
+        String password = "failpassword";
+        LoginDto loginDto = new LoginDto(username, password);
+
+        //when
+        ResultActions perform = getResultActions("/api/login", loginDto);
+
+        //then
+        perform.andDo(print())
+                .andExpect(status().isUnauthorized())
+                .andExpect(jsonPath("message").value("Authentication Failed"))
+                .andExpect(jsonPath("data.errorMessage").value("Invalid password"));
+    }
+
+    @Test
+    @Transactional
+    @DisplayName("로그인 실패_요청값이 틀림(필드)")
+    public void authentication_Fail_UnrecognizedPropertyException() throws Exception {
         //given
         String username = sharedUsername;
         String password = "failpassword";

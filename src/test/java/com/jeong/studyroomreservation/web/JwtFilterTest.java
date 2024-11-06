@@ -2,7 +2,7 @@ package com.jeong.studyroomreservation.web;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.jeong.studyroomreservation.domain.dto.UserDto;
-import com.jeong.studyroomreservation.domain.entity.UserRole;
+import com.jeong.studyroomreservation.domain.entity.user.UserRole;
 import com.jeong.studyroomreservation.domain.service.UserService;
 import com.jeong.studyroomreservation.web.security.dto.LoginDto;
 import com.jeong.studyroomreservation.web.security.jwt.JwtUtil;
@@ -57,7 +57,7 @@ public class JwtFilterTest {
                 "testName",
                 getUniqueEmail(),
                 getUniquePhoneNumber(),
-                UserRole.ROLE_MANAGER);
+                UserRole.ROLE_STUDYROOM_ADMIN);
         userService.signup(userDto);
         MvcResult mvcResult = mockMvc.perform(post("/api/login")
                 .contentType(MediaType.APPLICATION_JSON)
@@ -88,7 +88,7 @@ public class JwtFilterTest {
     @DisplayName("JwtFilter 인가 실패_AccessToken 만료")
     public void jwtFilter_Fail_ExpiredAccessToken() throws Exception{
         //given
-        String accessValue = jwtUtil.createJwt("access", username, UserRole.ROLE_MANAGER.name(), 100L);
+        String accessValue = jwtUtil.createJwt("access", username, UserRole.ROLE_STUDYROOM_ADMIN.name(), 100L);
         TimeUnit.MILLISECONDS.sleep(110L);
 
         //when
@@ -110,7 +110,7 @@ public class JwtFilterTest {
     @DisplayName("JwtFilter 인가 실패_AccessToken 이 아님")
     public void jwtFilter_Fail_NotAccessToken() throws Exception{
         //given
-        String accessValue = jwtUtil.createJwt("refresh", username, UserRole.ROLE_MANAGER.name(), 600000L);
+        String accessValue = jwtUtil.createJwt("refresh", username, UserRole.ROLE_STUDYROOM_ADMIN.name(), 600000L);
 
         //when
         ResultActions perform = mockMvc.perform(get("/api/test")
@@ -152,7 +152,7 @@ public class JwtFilterTest {
     @DisplayName("JwtFilter 인가 실패_AccessToken의 Username이 위조됨")
     public void jwtFilter_Fail_InvalidUsername() throws Exception{
         //given
-        String accessValue = jwtUtil.createJwt("access", "fakeUsername", UserRole.ROLE_MANAGER.name(), 600000L);
+        String accessValue = jwtUtil.createJwt("access", "fakeUsername", UserRole.ROLE_STUDYROOM_ADMIN.name(), 600000L);
 
         //when
         ResultActions perform = mockMvc.perform(get("/api/test")

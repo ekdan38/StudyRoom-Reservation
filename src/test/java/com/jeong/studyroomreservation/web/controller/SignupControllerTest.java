@@ -3,12 +3,10 @@ package com.jeong.studyroomreservation.web.controller;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.jeong.studyroomreservation.domain.dto.UserDto;
 import com.jeong.studyroomreservation.domain.error.ErrorCode;
-import com.jeong.studyroomreservation.domain.mapper.UserMapper;
+import com.jeong.studyroomreservation.domain.entity.user.UserMapper;
 import com.jeong.studyroomreservation.domain.service.UserService;
-import com.jeong.studyroomreservation.web.TestConst;
 import com.jeong.studyroomreservation.web.dto.signup.SignupRequestDto;
 import com.jeong.studyroomreservation.web.security.jwt.JwtUtil;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -17,7 +15,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
-import org.springframework.test.annotation.Rollback;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.transaction.annotation.Transactional;
@@ -25,7 +22,6 @@ import org.springframework.transaction.annotation.Transactional;
 import static com.jeong.studyroomreservation.web.TestConst.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 
-import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -92,7 +88,7 @@ class SignupControllerTest {
                 getUniquePhoneNumber(),
                 false,
                 false);
-        UserDto userDto = userMapper.SingnupRequestDtoToUserDto(signupRequestDto1);
+        UserDto userDto = userMapper.requestDtoToUserDto(signupRequestDto1);
         userService.signup(userDto);
 
         SignupRequestDto signupRequestDto2 = new SignupRequestDto(
@@ -133,7 +129,7 @@ class SignupControllerTest {
                 getUniquePhoneNumber(),
                 false,
                 false);
-        UserDto userDto = userMapper.SingnupRequestDtoToUserDto(signupRequestDto1);
+        UserDto userDto = userMapper.requestDtoToUserDto(signupRequestDto1);
         userService.signup(userDto);
 
         SignupRequestDto signupRequestDto2 = new SignupRequestDto(
@@ -174,7 +170,7 @@ class SignupControllerTest {
                 phoneNumber,
                 false,
                 false);
-        UserDto userDto = userMapper.SingnupRequestDtoToUserDto(signupRequestDto1);
+        UserDto userDto = userMapper.requestDtoToUserDto(signupRequestDto1);
         userService.signup(userDto);
 
         SignupRequestDto signupRequestDto2 = new SignupRequestDto(

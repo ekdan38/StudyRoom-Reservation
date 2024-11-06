@@ -1,17 +1,21 @@
 package com.jeong.studyroomreservation.domain.service;
 
 import com.jeong.studyroomreservation.domain.dto.UserDto;
-import com.jeong.studyroomreservation.domain.entity.User;
+import com.jeong.studyroomreservation.domain.entity.user.User;
+import com.jeong.studyroomreservation.domain.entity.user.UserRole;
 import com.jeong.studyroomreservation.domain.error.ErrorCode;
 import com.jeong.studyroomreservation.domain.error.exception.EmailAlreadyExistsException;
 import com.jeong.studyroomreservation.domain.error.exception.PhoneNumberAlreadyExistsException;
+import com.jeong.studyroomreservation.domain.error.exception.UserNotFoundException;
 import com.jeong.studyroomreservation.domain.error.exception.UsernameAlreadyExistsException;
-import com.jeong.studyroomreservation.domain.mapper.UserMapper;
+import com.jeong.studyroomreservation.domain.entity.user.UserMapper;
 import com.jeong.studyroomreservation.domain.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @Slf4j(topic = "[UserService]")
@@ -48,7 +52,15 @@ public class UserService {
 
         // User 저장
         User user = User.createUser(requestDto);
-        return userMapper.userToUserDto(userRepository.save(user));
+        return userMapper.entityToUserDto(userRepository.save(user));
+    }
+
+    @Transactional
+    public UserDto updateRole(Long userId, UserRole userRole){
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new UserNotFoundException(ErrorCode.USER_NOT_FOUND));
+        user.updateUserRole(userRole);
+        return userMapper.entityToUserDto(user);
     }
 
 }
