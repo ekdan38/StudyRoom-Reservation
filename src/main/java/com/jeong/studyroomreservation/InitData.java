@@ -6,7 +6,7 @@ import com.jeong.studyroomreservation.domain.entity.pendingcompany.PendingCompan
 import com.jeong.studyroomreservation.domain.entity.user.UserRole;
 import com.jeong.studyroomreservation.domain.service.PendingCompanyService;
 import com.jeong.studyroomreservation.domain.service.UserService;
-import com.jeong.studyroomreservation.web.dto.PendingCompanyRequestDto;
+import com.jeong.studyroomreservation.web.dto.pendingcompany.PendingCompanyRequestDto;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
@@ -26,7 +26,7 @@ public class InitData {
         userService.signup(userDto1);
         for(int i = 0 ; i < 10; i ++){
             UserDto signupDto = userService.signup(createUserDto(UserRole.ROLE_USER));
-            pendingCompanyService.save(createPendingDto(signupDto));
+            pendingCompanyService.createAndSave(createPendingDto(signupDto));
         }
 
     }
@@ -47,7 +47,7 @@ public class InitData {
                 "Description" + COMPANY_CNT,
                 "Location" + COMPANY_CNT,
                 "010-0000-" + (1000 + USER_CNT));
-        return pendingCompanyMapper.requestToDto(pendingCompanyRequestDto, userDto);
+        return pendingCompanyMapper.requestToDto(pendingCompanyRequestDto, userDto.getId());
     }
 
 }

@@ -1,10 +1,7 @@
 package com.jeong.studyroomreservation.domain.entity.pendingcompany;
 
 import com.jeong.studyroomreservation.domain.dto.PendingCompanyDto;
-import com.jeong.studyroomreservation.domain.dto.UserDto;
-import com.jeong.studyroomreservation.domain.entity.user.User;
-import com.jeong.studyroomreservation.domain.entity.user.UserMapper;
-import com.jeong.studyroomreservation.web.dto.PendingCompanyRequestDto;
+import com.jeong.studyroomreservation.web.dto.pendingcompany.PendingCompanyRequestDto;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Component;
@@ -14,24 +11,27 @@ import org.springframework.stereotype.Component;
 public class PendingCompanyMapper {
 
     private final ModelMapper modelMapper;
-    private final UserMapper userMapper;
 
-    //PendingCompanyRequestDto => PendingCompanyDto
-    public PendingCompanyDto requestToDto(PendingCompanyRequestDto requestDto, UserDto userDto){
-        PendingCompanyDto pendingCompanyDto = modelMapper.map(requestDto, PendingCompanyDto.class);
-        pendingCompanyDto.setUserDto(userDto);
-        return pendingCompanyDto;
+    //RequestDto => Dto
+    public PendingCompanyDto requestToDto(PendingCompanyRequestDto requestDto, Long userId){
+        return new PendingCompanyDto(
+                userId,
+                requestDto.getName(),
+                requestDto.getDescription(),
+                requestDto.getLocation(),
+                requestDto.getPhoneNumber());
     }
 
-    //Entity => PendingCompanyDto
-    public PendingCompanyDto entityToDto(PendingCompany entity){
-        return new PendingCompanyDto(entity.getId(), userMapper.entityToUserDto(entity.getUser()),entity.getName(), entity.getDescription(), entity.getLocation(), entity.getPhoneNumber());
+    //Entity => Dto
+    public PendingCompanyDto entityToDto(PendingCompany entity, Long userId){
+        return new PendingCompanyDto(
+                entity.getId(),
+                userId,
+                entity.getName(),
+                entity.getDescription(),
+                entity.getLocation(),
+                entity.getPhoneNumber());
     }
 
-    //PendingCompanyDto => Entity
-    public PendingCompany dtoToEntity(PendingCompanyDto dto){
-        User user = userMapper.userDtoToEntity(dto.getUserDto());
-        return PendingCompany.dtoToEntity(dto, user);
-    }
 
 }

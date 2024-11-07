@@ -14,6 +14,8 @@ import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
+import java.sql.SQLIntegrityConstraintViolationException;
+
 @RestControllerAdvice
 @Slf4j(topic = "ExceptionHandler")
 public class GlobalExceptionHandler {
@@ -53,6 +55,12 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ErrorResponseDto> studyRoomNotFoundException (StudyRoomNotFoundException e){
         log.error("StudyRoomNotFoundException  = {}", e.getMessage());
         return createErrorResponseEntity(ErrorCode.STUDY_ROOM_NOT_FOUND);
+    }
+
+    @ExceptionHandler(SQLIntegrityConstraintViolationException.class)
+    public ResponseEntity<ErrorResponseDto> sQLIntegrityConstraintViolationException (SQLIntegrityConstraintViolationException e){
+        log.error("SQLIntegrityConstraintViolationException  = {}", e.getMessage());
+        return createErrorResponseEntity(ErrorCode.INTERGRITY_CONSTRAIN_VIOLATION);
     }
 
     private ResponseEntity<ErrorResponseDto> createErrorResponseEntity(ErrorCode errorCode) {

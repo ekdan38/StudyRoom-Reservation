@@ -3,6 +3,7 @@ package com.jeong.studyroomreservation.domain.entity.stuydroom;
 import com.jeong.studyroomreservation.domain.dto.StudyRoomDto;
 import com.jeong.studyroomreservation.domain.entity.base.BaseEntity;
 import com.jeong.studyroomreservation.domain.entity.compnay.Company;
+import com.jeong.studyroomreservation.web.dto.studyroom.StudyRoomUpdateDto;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -20,7 +21,7 @@ public class StudyRoom extends BaseEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "company_id")
-    private Company company;
+    private Company company; //여기에서 양방향 관계 설정
 
     private String name;
 
@@ -49,16 +50,29 @@ public class StudyRoom extends BaseEntity {
     }
 
     //==생성 메세드==//
-    //state는 기본적으로 예약 불가능.
+    //state는 기본적으로 예약 불가능. requstDto에서 제외하자!
     public static StudyRoom createStudyRoom(StudyRoomDto dto, Company company){
-        return new StudyRoom(company, dto.getName(), dto.getCapacity(), dto.getPrice(), RoomState.UNAVAILABLE, dto.getTv(), dto.getWifi(), dto.getWhiteBoard());
+        StudyRoom studyRoom = new StudyRoom(
+                null,
+                dto.getName(),
+                dto.getCapacity(),
+                dto.getPrice(),
+                RoomState.UNAVAILABLE,
+                dto.getTv(),
+                dto.getWifi(),
+                dto.getWhiteBoard()
+        );
+        studyRoom.setCompany(company);
+        return studyRoom;
     }
 
-    static StudyRoom dtoToEntity(StudyRoomDto dto, Company company){
-        return new StudyRoom(dto.getId(), company, dto.getName(), dto.getCapacity(), dto.getPrice(), dto.getRoomState(), dto.getTv(), dto.getWifi(), dto.getWhiteBoard());
+    //==연관 관계 메서드==//
+    private void setCompany(Company company){
+        this.company = company;
+        company.getStudyRooms().add(this);
     }
 
-    //==수정 메서드==//
+    //==비즈니스 메서드==//
     public void updateStudyRoom(StudyRoomDto dto){
         this.name = dto.getName();
         this.capacity = dto.getCapacity();
@@ -68,4 +82,5 @@ public class StudyRoom extends BaseEntity {
         this.wifi = dto.getWifi();
         this.whiteBoard = dto.getWhiteBoard();
     }
+
 }

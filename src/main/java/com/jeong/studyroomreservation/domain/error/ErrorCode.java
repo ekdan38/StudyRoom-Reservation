@@ -17,7 +17,8 @@ public enum ErrorCode {
     PENDING_COMPANY_NOT_FOUND(HttpStatus.BAD_REQUEST, "REQ_02", "Not Found PendingCompany"),
     COMPANY_NOT_FOUND(HttpStatus.BAD_REQUEST, "REQ_03", "Not Found Company"),
     USER_NOT_FOUND(HttpStatus.BAD_REQUEST, "REQ_04", "Not Found USER"),
-    STUDY_ROOM_NOT_FOUND(HttpStatus.BAD_REQUEST, "REQ_05", "Not Found StudyRoom");
+    STUDY_ROOM_NOT_FOUND(HttpStatus.BAD_REQUEST, "REQ_05", "Not Found StudyRoom"),
+    INTERGRITY_CONSTRAIN_VIOLATION (HttpStatus.BAD_REQUEST, "REQ_06", "Invalid Request");
 
 
 

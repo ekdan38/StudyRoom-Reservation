@@ -1,6 +1,6 @@
 package com.jeong.studyroomreservation.domain.dto;
 
-import com.jeong.studyroomreservation.domain.entity.user.User;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -12,7 +12,8 @@ public class PendingCompanyDto {
 
     private Long id;
 
-    private UserDto userDto;
+    @JsonIgnore
+    private Long userId;
 
     private String name;
 
@@ -22,4 +23,11 @@ public class PendingCompanyDto {
 
     private String phoneNumber;
 
+    public PendingCompanyDto(Long userId, String name, String description, String location, String phoneNumber) {
+        this.userId = userId;
+        this.name = name;
+        this.description = description;
+        this.location = location;
+        this.phoneNumber = phoneNumber;
+    }
 }

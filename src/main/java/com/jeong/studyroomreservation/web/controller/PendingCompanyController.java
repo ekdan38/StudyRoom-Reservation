@@ -4,8 +4,9 @@ import com.jeong.studyroomreservation.domain.dto.PendingCompanyDto;
 import com.jeong.studyroomreservation.domain.dto.UserDto;
 import com.jeong.studyroomreservation.domain.entity.pendingcompany.PendingCompanyMapper;
 import com.jeong.studyroomreservation.domain.service.PendingCompanyService;
-import com.jeong.studyroomreservation.web.dto.PendingCompanyRequestDto;
+import com.jeong.studyroomreservation.web.dto.pendingcompany.PendingCompanyRequestDto;
 import com.jeong.studyroomreservation.web.dto.ResponseDto;
+import com.jeong.studyroomreservation.web.dto.pendingcompany.PendingCompanyResponseDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -26,19 +27,21 @@ public class PendingCompanyController {
     /**
      * 스터디 룸 회사 등록 요청은 간단하게 정보만으로 요청 하도록 하자.
      */
-    // 스터디 룸 등록
+    // Company 등록 요청 => PendingCompany
     @PostMapping("/api/pending-companies")
-    public ResponseEntity<ResponseDto<?>> createCompany(@RequestBody @Validated PendingCompanyRequestDto requestDto,
-                                           BindingResult bindingResult,
-                                           @AuthenticationPrincipal UserDto userDto){
+    public ResponseEntity<ResponseDto<?>> createPendingCompany(@RequestBody @Validated PendingCompanyRequestDto requestDto,
+                                                  BindingResult bindingResult,
+                                                  @AuthenticationPrincipal UserDto userDto){
         if(bindingResult.hasErrors()){
-            log.error("validation Error = {}", bindingResult);
+            log.error("Validation Error = {}", bindingResult);
             ResponseDto<BindingResult> responseBody = new ResponseDto<>("Validation Error", bindingResult);
             return ResponseEntity.badRequest().body(responseBody);
         }
+        PendingCompanyDto pendingCompanyDto = pendingCompanyService.createAndSave(pendingCompanyMapper.requestToDto(requestDto, userDto.getId()));
 
-        PendingCompanyDto pendingCompanyDto = pendingCompanyService.save(pendingCompanyMapper.requestToDto(requestDto, userDto));
-        ResponseDto<PendingCompanyDto> responseBody = new ResponseDto<>("PendingCompany request received successfully.", pendingCompanyDto);
+        //응답
+        PendingCompanyResponseDto responseDto = new PendingCompanyResponseDto(pendingCompanyDto, pendingCompanyDto.getUserId());
+        ResponseDto<PendingCompanyResponseDto> responseBody = new ResponseDto<>("Success", responseDto);
         return ResponseEntity.ok().body(responseBody);
     }
 }

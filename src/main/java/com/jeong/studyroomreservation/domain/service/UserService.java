@@ -57,10 +57,15 @@ public class UserService {
 
     @Transactional
     public UserDto updateRole(Long userId, UserRole userRole){
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new UserNotFoundException(ErrorCode.USER_NOT_FOUND));
+        User user = findById(userId);
         user.updateUserRole(userRole);
         return userMapper.entityToUserDto(user);
+    }
+
+    // 다른 service 로직에서 User 필요할 때 조회.
+    // 사용 : PendingService
+    public User findById(Long id){
+        return userRepository.findById(id).orElseThrow(() -> new UserNotFoundException(ErrorCode.USER_NOT_FOUND));
     }
 
 }

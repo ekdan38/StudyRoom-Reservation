@@ -1,6 +1,7 @@
 package com.jeong.studyroomreservation.domain.entity.pendingcompany;
 
 import com.jeong.studyroomreservation.domain.dto.PendingCompanyDto;
+import com.jeong.studyroomreservation.domain.entity.base.BaseEntity;
 import com.jeong.studyroomreservation.domain.entity.user.User;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
@@ -12,7 +13,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @Getter
-public class PendingCompany {
+public class PendingCompany extends BaseEntity {
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -43,10 +44,6 @@ public class PendingCompany {
         return new PendingCompany(user, dto.getName(), dto.getDescription(), dto.getLocation(), dto.getPhoneNumber());
     }
 
-    static PendingCompany dtoToEntity(PendingCompanyDto dto, User user){
-        return new PendingCompany(dto.getId(), user, dto.getName(), dto.getDescription(), dto.getLocation(), dto.getPhoneNumber());
-    }
-
     //==수정 메서드==//
     public void updatePendingCompany(PendingCompanyDto dto){
         this.name = dto.getName();
@@ -54,4 +51,5 @@ public class PendingCompany {
         this.location = dto.getLocation();
         this.phoneNumber = dto.getPhoneNumber();
     }
+
 }

@@ -13,9 +13,9 @@ public class RoleAssigner {
          */
         UserRole role = UserRole.ROLE_USER;
 
-        if(requestDto.isManager()){
-            role = UserRole.ROLE_STUDYROOM_MANAGER;
-        }
+//        if(requestDto.isManager()){
+//            role = UserRole.ROLE_STUDYROOM_MANAGER;
+//        }
         if(requestDto.isAdmin()){
             role = UserRole.ROLE_STUDYROOM_ADMIN;
         }

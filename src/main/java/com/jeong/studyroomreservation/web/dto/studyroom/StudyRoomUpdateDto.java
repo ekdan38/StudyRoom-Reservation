@@ -1,13 +1,12 @@
-package com.jeong.studyroomreservation.web.dto;
+package com.jeong.studyroomreservation.web.dto.studyroom;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
-import lombok.AllArgsConstructor;
+import jakarta.validation.constraints.Pattern;
 import lombok.Data;
 
 @Data
-@AllArgsConstructor
-public class StudyRoomRequestDto {
+public class StudyRoomUpdateDto {
 
     @NotBlank
     private String name;
@@ -19,6 +18,10 @@ public class StudyRoomRequestDto {
     private Integer price;
 
     @NotNull
+    @Pattern(regexp = "AVAILABLE|RESERVED|UNAVAILABLE", message = "AVAILABLE, RESERVED, UNAVAILABLE 중 값이 있어야 합니다.")
+    private String state;
+
+    @NotNull
     private Boolean tv;
 
     @NotNull
@@ -26,4 +29,5 @@ public class StudyRoomRequestDto {
 
     @NotNull
     private Boolean whiteBoard;
+
 }

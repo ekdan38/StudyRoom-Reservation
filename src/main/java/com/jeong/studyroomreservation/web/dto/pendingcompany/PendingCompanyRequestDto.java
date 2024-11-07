@@ -1,4 +1,4 @@
-package com.jeong.studyroomreservation.web.dto;
+package com.jeong.studyroomreservation.web.dto.pendingcompany;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;

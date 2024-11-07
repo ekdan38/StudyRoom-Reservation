@@ -3,11 +3,9 @@ package com.jeong.studyroomreservation.domain.entity.user;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.jeong.studyroomreservation.domain.dto.UserDto;
 import com.jeong.studyroomreservation.domain.entity.base.BaseEntity;
+import com.jeong.studyroomreservation.domain.entity.compnay.Company;
 import jakarta.persistence.*;
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 @Entity
 @Table(name = "users")
@@ -49,6 +47,7 @@ public class User extends BaseEntity {
         this.phoneNumber = phoneNumber;
         this.role = role;
     }
+
 
     //==생성 메서드==//
     public static User createUser(UserDto dto){
