@@ -64,6 +64,7 @@ public class GlobalExceptionHandler {
         return createErrorResponseEntity(COMPANY_POST_NOT_FOUND);
     }
 
+
     @ExceptionHandler(StudyRoomPostNotFoundException.class)
     public ResponseEntity<ErrorResponseDto> studyRoomPostNotFoundException (StudyRoomPostNotFoundException e){
         log.error("StudyRoomPostNotFoundException  = {}", e.getMessage());
