@@ -1,4 +1,4 @@
-package com.jeong.studyroomreservation.domain.dto;
+package com.jeong.studyroomreservation.domain.dto.studyroom;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.jeong.studyroomreservation.domain.entity.compnay.Company;

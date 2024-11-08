@@ -1,7 +1,6 @@
 package com.jeong.studyroomreservation.web.security.AuthenticationFilter;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.jeong.studyroomreservation.domain.dto.UserDto;
 import com.jeong.studyroomreservation.web.dto.ResponseDto;
 import com.jeong.studyroomreservation.web.security.AuthenticationToken.RestAuthenticationToken;
 import com.jeong.studyroomreservation.web.security.dto.LoginDto;
@@ -9,7 +8,6 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.core.annotation.Order;
 import org.springframework.http.MediaType;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;

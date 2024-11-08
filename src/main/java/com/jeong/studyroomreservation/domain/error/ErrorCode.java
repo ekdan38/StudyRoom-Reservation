@@ -18,7 +18,19 @@ public enum ErrorCode {
     COMPANY_NOT_FOUND(HttpStatus.BAD_REQUEST, "REQ_03", "Not Found Company"),
     USER_NOT_FOUND(HttpStatus.BAD_REQUEST, "REQ_04", "Not Found USER"),
     STUDY_ROOM_NOT_FOUND(HttpStatus.BAD_REQUEST, "REQ_05", "Not Found StudyRoom"),
-    INTERGRITY_CONSTRAIN_VIOLATION (HttpStatus.BAD_REQUEST, "REQ_06", "Invalid Request");
+    INTERGRITY_CONSTRAIN_VIOLATION (HttpStatus.BAD_REQUEST, "REQ_06", "Invalid Request"),
+    COMPANY_POST_NOT_FOUND(HttpStatus.BAD_REQUEST, "REQ_07", "Not Found CompanyPost"),
+    STUDY_ROOM_POST_NOT_FOUND(HttpStatus.BAD_REQUEST, "REQ_08", "Not Found StudyRoomPost"),
+
+    S3_EMPTY_FILE (HttpStatus.BAD_REQUEST, "S3_01", "Empty File"),
+    S3_EXCEPTION_ON_IMAGE_UPLOAD (HttpStatus.BAD_REQUEST, "S3_02", "ImageUpload Fail"),
+    S3_NO_FILE_EXTENTION (HttpStatus.BAD_REQUEST, "S3_03", "No Extention"),
+    S3_INVALID_EXTENTION(HttpStatus.BAD_REQUEST, "S3_04", "Invalid Extention"),
+    S3_EXCEPTION_PUT_OBJECT(HttpStatus.BAD_REQUEST, "S3_05", "PutObject fail"),
+    S3_EXCEPTION_DELETE(HttpStatus.BAD_REQUEST, "S3_06", "Delete Fail"),
+
+
+    FILE_UNSUPPORTED_ENTITY(HttpStatus.BAD_REQUEST, "", "지원하지 않는 entity입니다.");
 
 
 

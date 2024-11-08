@@ -1,4 +1,4 @@
-package com.jeong.studyroomreservation.domain.dto;
+package com.jeong.studyroomreservation.domain.dto.pendingcompany;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;

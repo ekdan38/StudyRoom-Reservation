@@ -1,7 +1,7 @@
 package com.jeong.studyroomreservation.web.security.jwt;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.jeong.studyroomreservation.domain.dto.UserDto;
+import com.jeong.studyroomreservation.domain.dto.user.UserDto;
 import com.jeong.studyroomreservation.web.dto.ResponseDto;
 import com.jeong.studyroomreservation.web.security.AuthenticationToken.RestAuthenticationToken;
 import com.jeong.studyroomreservation.web.security.userdetails.CustomUserDetails;
@@ -19,7 +19,6 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.util.HashMap;
 import java.util.Map;
 

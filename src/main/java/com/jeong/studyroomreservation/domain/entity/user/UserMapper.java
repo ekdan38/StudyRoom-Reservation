@@ -1,6 +1,6 @@
 package com.jeong.studyroomreservation.domain.entity.user;
 
-import com.jeong.studyroomreservation.domain.dto.UserDto;
+import com.jeong.studyroomreservation.domain.dto.user.UserDto;
 import com.jeong.studyroomreservation.domain.RoleAssigner;
 import com.jeong.studyroomreservation.web.dto.signup.SignupRequestDto;
 import lombok.RequiredArgsConstructor;

@@ -1,7 +1,8 @@
 package com.jeong.studyroomreservation.domain.entity.compnay;
 
-import com.jeong.studyroomreservation.domain.dto.CompanyDto;
-import com.jeong.studyroomreservation.web.dto.CompanyUpdateDto;
+import com.jeong.studyroomreservation.domain.dto.company.CompanyDto;
+import com.jeong.studyroomreservation.domain.dto.company.CompanyResponseDto;
+import com.jeong.studyroomreservation.web.dto.company.CompanyUpdateDto;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -19,13 +20,24 @@ public class CompanyMapper {
                 entity.getPhoneNumber());
     }
 
-    // Request => Dto
-    public CompanyDto requestToDto(CompanyUpdateDto updateDto){
+    // update => Dto
+    public CompanyDto updateToDto(CompanyUpdateDto updateDto){
         return new CompanyDto(
                 updateDto.getName(),
                 updateDto.getDescription(),
                 updateDto.getLocation(),
-                updateDto.getPhoneNumber());
+                updateDto.getPhoneNumber()
+        );
     }
 
+    // Entity => responseDto
+    public CompanyResponseDto entityToResponse(Company entity){
+        return new CompanyResponseDto(
+                entity.getId(),
+                entity.getName(),
+                entity.getDescription(),
+                entity.getLocation(),
+                entity.getPhoneNumber()
+        );
+    }
 }

@@ -1,6 +1,6 @@
 package com.jeong.studyroomreservation;
 
-import com.jeong.studyroomreservation.domain.dto.UserDto;
+import com.jeong.studyroomreservation.domain.dto.user.UserDto;
 import org.springframework.data.domain.AuditorAware;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;

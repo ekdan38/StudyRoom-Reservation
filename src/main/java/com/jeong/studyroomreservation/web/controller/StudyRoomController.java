@@ -1,7 +1,8 @@
 package com.jeong.studyroomreservation.web.controller;
 
-import com.jeong.studyroomreservation.domain.dto.StudyRoomDto;
-import com.jeong.studyroomreservation.domain.dto.UserDto;
+import com.jeong.studyroomreservation.domain.dto.studyroom.StudyRoomResponseDto;
+import com.jeong.studyroomreservation.domain.dto.studyroom.StudyRoomUpdateResponseDto;
+import com.jeong.studyroomreservation.domain.dto.user.UserDto;
 import com.jeong.studyroomreservation.domain.entity.compnay.Company;
 import com.jeong.studyroomreservation.domain.entity.stuydroom.StudyRoomMapper;
 import com.jeong.studyroomreservation.domain.entity.user.UserRole;
@@ -9,7 +10,7 @@ import com.jeong.studyroomreservation.domain.service.CompanyService;
 import com.jeong.studyroomreservation.domain.service.StudyRoomService;
 import com.jeong.studyroomreservation.web.dto.ResponseDto;
 import com.jeong.studyroomreservation.web.dto.studyroom.StudyRoomRequestDto;
-import com.jeong.studyroomreservation.web.dto.studyroom.StudyRoomUpdateDto;
+import com.jeong.studyroomreservation.web.dto.studyroom.StudyRoomUpdateRequestDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -20,6 +21,9 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -33,72 +37,73 @@ public class StudyRoomController {
 
     //스터디 룸 생성
     // StudyRoomRequestDto
-
-    /**
-     * Role이 STUDYROOM_ADMIN이라면 검사해야됨.
-     */
     @PostMapping
     public ResponseEntity<?> createStudyRoom(@PathVariable("companyId") Long companyId,
-                                             @RequestBody @Validated StudyRoomRequestDto requestDto,
+                                             @RequestPart("file") List<MultipartFile> files,
+                                             @RequestPart("data") @Validated StudyRoomRequestDto requestDto,
                                              BindingResult bindingResult,
                                              @AuthenticationPrincipal UserDto userDto) {
-        // STUDYROOM_ADMIM이면 해당 company에 접근 권한이 있는지 확인.
-        if (UserRole.ROLE_STUDYROOM_ADMIN.name().equals(userDto.getRole().name())) {
-            Company company = companyService.findById(companyId);
-            if (!company.getUser().getId().equals(userDto.getId())) {
-                ResponseDto<String> responseBody =
-                        new ResponseDto<>("Access Denied", "No Permission to modify this company");
-                return ResponseEntity.status(HttpStatus.FORBIDDEN).body(responseBody);
-            }
-        }
 
+        // STUDYROOM_ADMIM이면 해당 company에 접근 권한이 있는지 확인.
+        if (!checkPermission(userDto, companyId)) {
+            ResponseDto<String> responseBody =
+                    new ResponseDto<>("Access Denied", "No Permission to modify this studyRoom");
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(responseBody);
+        }
 
         if (bindingResult.hasErrors()) {
             log.error("Validation Error = {}", bindingResult);
             ResponseDto<BindingResult> responseBody = new ResponseDto<>("Validation Error", bindingResult);
             return ResponseEntity.badRequest().body(responseBody);
         }
-        StudyRoomDto studyRoomDto = studyRoomService.createAndSave(studyRoomMapper.requestToDto(requestDto), companyId);
-        ResponseDto<StudyRoomDto> responseBody = new ResponseDto<>("Success", studyRoomDto);
+        StudyRoomResponseDto responseDto = studyRoomService.createAndSave(companyId, studyRoomMapper.requestToDto(requestDto), files);
+        ResponseDto<StudyRoomResponseDto> responseBody = new ResponseDto<>("Success", responseDto);
         return ResponseEntity.ok().body(responseBody);
     }
 
     //스터디 룸 조회 여러개
     @GetMapping
-    public ResponseEntity<ResponseDto<Page<StudyRoomDto>>> getStudyRooms(@PathVariable("companyId") Long companyId,
-                                                                         Pageable pageable) {
-        Page<StudyRoomDto> studyRooms = studyRoomService.getStudyRooms(companyId, pageable);
-        ResponseDto<Page<StudyRoomDto>> responseBody = new ResponseDto<>("Success", studyRooms);
+    public ResponseEntity<ResponseDto<Page<StudyRoomResponseDto>>> getStudyRooms(@PathVariable("companyId") Long companyId,
+                                                                                 Pageable pageable) {
+        Page<StudyRoomResponseDto> responseDtos = studyRoomService.getStudyRooms(companyId, pageable);
+        ResponseDto<Page<StudyRoomResponseDto>> responseBody = new ResponseDto<>("Success", responseDtos);
         return ResponseEntity.ok().body(responseBody);
     }
 
     //스터디 룸 조회 단건
     @GetMapping("/{id}")
-    public ResponseEntity<ResponseDto<StudyRoomDto>> getStudyRoom(@PathVariable("companyId") Long companyId,
-                                                                  @PathVariable("id") Long id) {
-        StudyRoomDto studyRoom = studyRoomService.getStudyRoom(companyId, id);
-        ResponseDto<StudyRoomDto> responseBody = new ResponseDto<>("Success", studyRoom);
+    public ResponseEntity<ResponseDto<StudyRoomResponseDto>> getStudyRoom(@PathVariable("companyId") Long companyId,
+                                                                          @PathVariable("id") Long id) {
+        StudyRoomResponseDto responseDto = studyRoomService.getStudyRoom(companyId, id);
+        ResponseDto<StudyRoomResponseDto> responseBody = new ResponseDto<>("Success", responseDto);
         return ResponseEntity.ok().body(responseBody);
     }
 
     //스터디 룸 수정
     @PutMapping("/{id}")
-    public ResponseEntity<?> updateStudyRoom(@RequestBody @Validated StudyRoomUpdateDto updateDto,
+    public ResponseEntity<?> updateStudyRoom(@RequestPart("file") List<MultipartFile> files,
+                                             @RequestPart("data") @Validated StudyRoomUpdateRequestDto updateDto,
+                                             BindingResult bindingResult,
                                              @PathVariable("companyId") Long companyId,
                                              @PathVariable("id") Long id,
                                              @AuthenticationPrincipal UserDto userDto) {
         // STUDYROOM_ADMIM이면
-        if (UserRole.ROLE_STUDYROOM_ADMIN.name().equals(userDto.getRole().name())) {
-            Company company = companyService.findById(companyId);
-            if (!company.getUser().getId().equals(userDto.getId())) {
-                ResponseDto<String> responseBody =
-                        new ResponseDto<>("Access Denied", "No Permission to modify this company");
-                return ResponseEntity.status(HttpStatus.FORBIDDEN).body(responseBody);
-            }
+        if (!checkPermission(userDto, companyId)) {
+            ResponseDto<String> responseBody =
+                    new ResponseDto<>("Access Denied", "No Permission to modify this studyRoom");
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(responseBody);
         }
-        StudyRoomDto studyRoomDto = studyRoomService.updateStudyRoom(studyRoomMapper.updateToDto(updateDto), companyId, id);
-        ResponseDto<StudyRoomDto> responseBody
-                = new ResponseDto<>("Success", studyRoomDto);
+
+        if (bindingResult.hasErrors()) {
+            log.error("Validation Error = {}", bindingResult);
+            ResponseDto<BindingResult> responseBody = new ResponseDto<>("Validation Error", bindingResult);
+            return ResponseEntity.badRequest().body(responseBody);
+        }
+
+        StudyRoomUpdateResponseDto responseDto =
+                studyRoomService.updateStudyRoom(companyId, id, studyRoomMapper.updateToDto(updateDto), files, updateDto.getDeleteImages());
+
+        ResponseDto<StudyRoomUpdateResponseDto> responseBody = new ResponseDto<>("Success", responseDto);
         return ResponseEntity.ok().body(responseBody);
     }
 
@@ -107,19 +112,29 @@ public class StudyRoomController {
     @DeleteMapping("/{id}")
     public ResponseEntity<?> deleteStudyRoom(@PathVariable("companyId") Long companyId,
                                              @PathVariable("id") Long id,
-                                             @AuthenticationPrincipal UserDto userDto){
+                                             @AuthenticationPrincipal UserDto userDto) {
         // STUDYROOM_ADMIM이면
+        if (!checkPermission(userDto, companyId)) {
+            ResponseDto<String> responseBody =
+                    new ResponseDto<>("Access Denied", "No Permission to modify this studyRoom");
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(responseBody);
+        }
+
+
+        studyRoomService.deleteStudyRoom(companyId, id);
+        ResponseDto<String> responseBody = new ResponseDto<>("Success", "Delete StudyRoom id = " + id);
+        return ResponseEntity.ok().body(responseBody);
+    }
+
+
+    private Boolean checkPermission(UserDto userDto, Long companyId) {
         if (UserRole.ROLE_STUDYROOM_ADMIN.name().equals(userDto.getRole().name())) {
             Company company = companyService.findById(companyId);
             if (!company.getUser().getId().equals(userDto.getId())) {
-                ResponseDto<String> responseBody =
-                        new ResponseDto<>("Access Denied", "No Permission to modify this company");
-                return ResponseEntity.status(HttpStatus.FORBIDDEN).body(responseBody);
+                return false;
             }
         }
-            studyRoomService.deleteStudyRoom(companyId, id);
-        ResponseDto<String> responseBody = new ResponseDto<>("Success", "Delete StudyRoom id = " + id);
-        return ResponseEntity.ok().body(responseBody);
+        return true;
     }
 
 }

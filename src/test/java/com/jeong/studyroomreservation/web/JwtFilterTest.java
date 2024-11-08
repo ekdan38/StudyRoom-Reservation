@@ -1,7 +1,7 @@
 package com.jeong.studyroomreservation.web;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.jeong.studyroomreservation.domain.dto.UserDto;
+import com.jeong.studyroomreservation.domain.dto.user.UserDto;
 import com.jeong.studyroomreservation.domain.entity.user.UserRole;
 import com.jeong.studyroomreservation.domain.service.UserService;
 import com.jeong.studyroomreservation.web.security.dto.LoginDto;

@@ -1,6 +1,6 @@
 package com.jeong.studyroomreservation.domain.entity.pendingcompany;
 
-import com.jeong.studyroomreservation.domain.dto.PendingCompanyDto;
+import com.jeong.studyroomreservation.domain.dto.pendingcompany.PendingCompanyDto;
 import com.jeong.studyroomreservation.domain.entity.base.BaseEntity;
 import com.jeong.studyroomreservation.domain.entity.user.User;
 import jakarta.persistence.*;

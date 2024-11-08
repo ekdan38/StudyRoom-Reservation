@@ -1,4 +1,4 @@
-package com.jeong.studyroomreservation.domain.dto;
+package com.jeong.studyroomreservation.domain.dto.company;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.jeong.studyroomreservation.domain.entity.user.User;
@@ -8,6 +8,9 @@ import jakarta.persistence.ManyToOne;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Data
 @AllArgsConstructor
@@ -27,13 +30,6 @@ public class CompanyDto {
 
     private String phoneNumber;
 
-    public CompanyDto(Long userId, String name, String description, String location, String phoneNumber) {
-        this.userId = userId;
-        this.name = name;
-        this.description = description;
-        this.location = location;
-        this.phoneNumber = phoneNumber;
-    }
 
     public CompanyDto(String name, String description, String location, String phoneNumber) {
         this.name = name;
@@ -41,4 +37,6 @@ public class CompanyDto {
         this.location = location;
         this.phoneNumber = phoneNumber;
     }
+
+
 }

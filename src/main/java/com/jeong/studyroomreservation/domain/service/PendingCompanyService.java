@@ -1,9 +1,9 @@
 package com.jeong.studyroomreservation.domain.service;
 
-import com.jeong.studyroomreservation.domain.dto.CompanyDto;
-import com.jeong.studyroomreservation.domain.dto.PendingCompanyDto;
-import com.jeong.studyroomreservation.domain.dto.PendingCompanyWithUserDto;
-import com.jeong.studyroomreservation.domain.dto.UserDto;
+import com.jeong.studyroomreservation.domain.dto.company.CompanyDto;
+import com.jeong.studyroomreservation.domain.dto.pendingcompany.PendingCompanyDto;
+import com.jeong.studyroomreservation.domain.dto.pendingcompany.PendingCompanyWithUserDto;
+import com.jeong.studyroomreservation.domain.dto.user.UserDto;
 import com.jeong.studyroomreservation.domain.entity.pendingcompany.PendingCompany;
 import com.jeong.studyroomreservation.domain.entity.pendingcompany.PendingCompanyMapper;
 import com.jeong.studyroomreservation.domain.entity.user.User;

@@ -1,9 +1,11 @@
-package com.jeong.studyroomreservation.web.dto;
+package com.jeong.studyroomreservation.web.dto.company;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+
+import java.util.List;
 
 @Data
 @AllArgsConstructor
@@ -25,5 +27,7 @@ public class CompanyUpdateDto {
             message = "전화번호는 010-1234-5678 형식이어야 합니다."
     )
     private String phoneNumber;
+
+    private List<String> deleteImages;
 
 }

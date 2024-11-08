@@ -1,11 +1,9 @@
 package com.jeong.studyroomreservation.web.controller.auth;
 
-import com.jeong.studyroomreservation.domain.dto.UserDto;
+import com.jeong.studyroomreservation.domain.dto.user.UserDto;
 import com.jeong.studyroomreservation.domain.entity.compnay.Company;
 import com.jeong.studyroomreservation.domain.entity.stuydroom.StudyRoom;
-import com.jeong.studyroomreservation.domain.entity.user.User;
 import com.jeong.studyroomreservation.domain.repository.CompanyRepository;
-import com.jeong.studyroomreservation.domain.repository.UserRepository;
 import com.jeong.studyroomreservation.web.dto.ResponseDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;

@@ -1,6 +1,6 @@
 package com.jeong.studyroomreservation.web.dto.pendingcompany;
 
-import com.jeong.studyroomreservation.domain.dto.PendingCompanyDto;
+import com.jeong.studyroomreservation.domain.dto.pendingcompany.PendingCompanyDto;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 

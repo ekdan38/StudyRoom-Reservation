@@ -1,7 +1,8 @@
 package com.jeong.studyroomreservation.domain.entity.compnay;
 
-import com.jeong.studyroomreservation.domain.dto.CompanyDto;
+import com.jeong.studyroomreservation.domain.dto.company.CompanyDto;
 import com.jeong.studyroomreservation.domain.entity.base.BaseEntity;
+import com.jeong.studyroomreservation.domain.entity.file.CompanyFile;
 import com.jeong.studyroomreservation.domain.entity.stuydroom.StudyRoom;
 import com.jeong.studyroomreservation.domain.entity.user.User;
 import jakarta.persistence.*;
@@ -25,6 +26,9 @@ public class Company extends BaseEntity {
 
     @OneToMany(mappedBy = "company", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<StudyRoom> studyRooms = new ArrayList<>(); // 이건 studyroom에서 추가해준다.
+
+    @OneToMany(mappedBy = "company",cascade = CascadeType.ALL, orphanRemoval = true )
+    private List<CompanyFile> companyFiles = new ArrayList<>();
 
     private String name;
 

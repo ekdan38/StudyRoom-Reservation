@@ -1,9 +1,13 @@
 package com.jeong.studyroomreservation.domain.entity.stuydroom;
 
-import com.jeong.studyroomreservation.domain.dto.StudyRoomDto;
+import com.jeong.studyroomreservation.domain.dto.studyroom.StudyRoomDto;
+import com.jeong.studyroomreservation.domain.dto.studyroom.StudyRoomResponseDto;
+import com.jeong.studyroomreservation.domain.dto.studyroom.StudyRoomUpdateResponseDto;
 import com.jeong.studyroomreservation.web.dto.studyroom.StudyRoomRequestDto;
-import com.jeong.studyroomreservation.web.dto.studyroom.StudyRoomUpdateDto;
+import com.jeong.studyroomreservation.web.dto.studyroom.StudyRoomUpdateRequestDto;
 import org.springframework.stereotype.Component;
+
+import java.util.List;
 
 @Component
 public class StudyRoomMapper {
@@ -36,7 +40,7 @@ public class StudyRoomMapper {
     }
 
     // Update => Dto
-    public StudyRoomDto updateToDto(StudyRoomUpdateDto updateDto){
+    public StudyRoomDto updateToDto(StudyRoomUpdateRequestDto updateDto){
         return new StudyRoomDto(
                 updateDto.getName(),
                 updateDto.getCapacity(),
@@ -46,6 +50,39 @@ public class StudyRoomMapper {
                 updateDto.getWifi(),
                 updateDto.getWhiteBoard()
         );
+    }
+
+    // Entity => Response
+    public StudyRoomResponseDto entityToResponse(StudyRoom entity){
+        return new StudyRoomResponseDto(
+                entity.getId(),
+                entity.getName(),
+                entity.getCapacity(),
+                entity.getPrice(),
+                entity.getRoomState(),
+                entity.getTv(),
+                entity.getWifi(),
+                entity.getWhiteBoard()
+        );
+    }
+
+    // responseDto => updateResponseDto
+    public StudyRoomUpdateResponseDto responseToUpdateResponse(StudyRoomResponseDto responseDto){
+        StudyRoomUpdateResponseDto updateResponseDto = new StudyRoomUpdateResponseDto(
+                responseDto.getId(),
+                responseDto.getName(),
+                responseDto.getCapacity(),
+                responseDto.getPrice(),
+                responseDto.getRoomState(),
+                responseDto.getTv(),
+                responseDto.getWifi(),
+                responseDto.getWhiteBoard()
+        );
+        List<String> images = responseDto.getImages();
+        for (String image : images) {
+            updateResponseDto.getNewImages().add(image);
+        }
+        return updateResponseDto;
     }
 
     private RoomState roomState (String state){

@@ -5,8 +5,10 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 import lombok.Data;
 
+import java.util.List;
+
 @Data
-public class StudyRoomUpdateDto {
+public class StudyRoomUpdateRequestDto {
 
     @NotBlank
     private String name;
@@ -29,5 +31,7 @@ public class StudyRoomUpdateDto {
 
     @NotNull
     private Boolean whiteBoard;
+
+    private List<String> deleteImages;
 
 }

@@ -1,20 +1,17 @@
 package com.jeong.studyroomreservation.web.controller.system;
 
-import com.jeong.studyroomreservation.domain.dto.CompanyDto;
-import com.jeong.studyroomreservation.domain.dto.PendingCompanyDto;
-import com.jeong.studyroomreservation.domain.dto.PendingCompanyWithUserDto;
-import com.jeong.studyroomreservation.domain.dto.UserDto;
+import com.jeong.studyroomreservation.domain.dto.company.CompanyDto;
+import com.jeong.studyroomreservation.domain.dto.pendingcompany.PendingCompanyDto;
+import com.jeong.studyroomreservation.domain.dto.pendingcompany.PendingCompanyWithUserDto;
 import com.jeong.studyroomreservation.domain.entity.pendingcompany.PendingCompanyMapper;
 import com.jeong.studyroomreservation.domain.service.PendingCompanyService;
 import com.jeong.studyroomreservation.web.dto.ResponseDto;
 import com.jeong.studyroomreservation.web.dto.pendingcompany.PendingCompanyRequestDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.coyote.Response;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 

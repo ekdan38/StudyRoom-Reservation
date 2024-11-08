@@ -1,9 +1,8 @@
 package com.jeong.studyroomreservation.domain.entity.user;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.jeong.studyroomreservation.domain.dto.UserDto;
+import com.jeong.studyroomreservation.domain.dto.user.UserDto;
 import com.jeong.studyroomreservation.domain.entity.base.BaseEntity;
-import com.jeong.studyroomreservation.domain.entity.compnay.Company;
 import jakarta.persistence.*;
 import lombok.*;
 

@@ -1,14 +1,17 @@
 package com.jeong.studyroomreservation.domain.entity.stuydroom;
 
-import com.jeong.studyroomreservation.domain.dto.StudyRoomDto;
+import com.jeong.studyroomreservation.domain.dto.studyroom.StudyRoomDto;
 import com.jeong.studyroomreservation.domain.entity.base.BaseEntity;
 import com.jeong.studyroomreservation.domain.entity.compnay.Company;
-import com.jeong.studyroomreservation.web.dto.studyroom.StudyRoomUpdateDto;
+import com.jeong.studyroomreservation.domain.entity.file.StudyRoomFile;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
@@ -22,6 +25,9 @@ public class StudyRoom extends BaseEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "company_id")
     private Company company; //여기에서 양방향 관계 설정
+
+    @OneToMany(mappedBy = "studyRoom", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<StudyRoomFile> studyRoomFiles = new ArrayList<>();
 
     private String name;
 

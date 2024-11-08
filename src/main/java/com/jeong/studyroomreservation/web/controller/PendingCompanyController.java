@@ -1,7 +1,7 @@
 package com.jeong.studyroomreservation.web.controller;
 
-import com.jeong.studyroomreservation.domain.dto.PendingCompanyDto;
-import com.jeong.studyroomreservation.domain.dto.UserDto;
+import com.jeong.studyroomreservation.domain.dto.pendingcompany.PendingCompanyDto;
+import com.jeong.studyroomreservation.domain.dto.user.UserDto;
 import com.jeong.studyroomreservation.domain.entity.pendingcompany.PendingCompanyMapper;
 import com.jeong.studyroomreservation.domain.service.PendingCompanyService;
 import com.jeong.studyroomreservation.web.dto.pendingcompany.PendingCompanyRequestDto;
