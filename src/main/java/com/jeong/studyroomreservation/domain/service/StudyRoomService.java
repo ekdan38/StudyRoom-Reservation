@@ -10,7 +10,8 @@ import com.jeong.studyroomreservation.domain.entity.file.StudyRoomFile;
 import com.jeong.studyroomreservation.domain.entity.stuydroom.StudyRoom;
 import com.jeong.studyroomreservation.domain.entity.stuydroom.StudyRoomMapper;
 import com.jeong.studyroomreservation.domain.error.ErrorCode;
-import com.jeong.studyroomreservation.domain.error.exception.StudyRoomNotFoundException;
+import com.jeong.studyroomreservation.domain.error.exception.NotFoundException;
+import com.jeong.studyroomreservation.domain.error.exception.S3Exception;
 import com.jeong.studyroomreservation.domain.repository.StudyRoomRepository;
 import com.jeong.studyroomreservation.domain.s3.S3ImageUtil;
 import lombok.RequiredArgsConstructor;
@@ -28,6 +29,7 @@ import java.util.List;
 @Slf4j(topic = "[StudyRoomService]")
 @Transactional(readOnly = true)
 public class StudyRoomService {
+    private static final String ENTITY_TYPE = "StudyRoomFile";
 
     private final FileService fileService;
     private final S3ImageUtil s3ImageUtil;
@@ -63,10 +65,10 @@ public class StudyRoomService {
         });
     }
 
-    // StudyRoom 단건 조회
+    // StudyRoom 단건 조회(n + 1 해결, LEFT 조인... 기본은 INNER 조인이다.그래서 FETCHJOIN 대상이 없는 경우에는 에러 생긴다..)
     public StudyRoomResponseDto getStudyRoom(Long companyId, Long id) {
-        StudyRoom foundStudyRoom = studyRoomRepository.findByCompanyIdAndId(companyId, id)
-                .orElseThrow(() -> new StudyRoomNotFoundException(ErrorCode.STUDY_ROOM_NOT_FOUND));
+        StudyRoom foundStudyRoom = studyRoomRepository.findByCompanyIdAndIdWithStudyRoomFiles(companyId, id)
+                .orElseThrow(() -> new NotFoundException(ErrorCode.STUDY_ROOM_NOT_FOUND));
 
         StudyRoomResponseDto studyRoomResponseDto = studyRoomMapper.entityToResponse(foundStudyRoom);
         List<StudyRoomFile> studyRoomFiles = foundStudyRoom.getStudyRoomFiles();
@@ -80,8 +82,8 @@ public class StudyRoomService {
     // StudyRoom 수정
     @Transactional
     public StudyRoomUpdateResponseDto updateStudyRoom(Long companyId, Long id, StudyRoomDto dto, List<MultipartFile> files, List<String> deleteFiles) {
-        StudyRoom foundStudyRoom = studyRoomRepository.findByCompanyIdAndId(companyId, id)
-                .orElseThrow(() -> new StudyRoomNotFoundException(ErrorCode.STUDY_ROOM_NOT_FOUND));
+        StudyRoom foundStudyRoom = studyRoomRepository.findByCompanyIdAndIdWithStudyRoomFiles(companyId, id)
+                .orElseThrow(() -> new NotFoundException(ErrorCode.STUDY_ROOM_NOT_FOUND));
         foundStudyRoom.updateStudyRoom(dto);
 
         StudyRoomResponseDto studyRoomResponseDto = studyRoomMapper.entityToResponse(foundStudyRoom);
@@ -93,11 +95,11 @@ public class StudyRoomService {
             try {
                 for (String deleteImage : deleteFiles) {
                     s3ImageUtil.deleteImageFromS3(deleteImage);
-                    fileService.deleteFileByEntityAndS3FileName("StudyRoomFile", id, deleteImage);
+                    fileService.deleteFileByEntityAndS3FileName(ENTITY_TYPE, id, deleteImage);
                     responseDto.getDeleteImages().add(deleteImage);
                 }
             } catch (Exception e) {
-                throw new IllegalArgumentException("이미지 삭제하다가 오류남.");
+                throw new S3Exception(ErrorCode.S3_EXCEPTION_DELETE);
             }
         }
         return responseDto;
@@ -107,27 +109,27 @@ public class StudyRoomService {
     // StudyRoom 삭제
     @Transactional
     public void deleteStudyRoom(Long companyId, Long id) {
-        studyRoomRepository.findByCompanyIdAndId(companyId, id)
-                .orElseThrow(() -> new StudyRoomNotFoundException(ErrorCode.STUDY_ROOM_NOT_FOUND));
-        List<File> studyRoomFile = fileService.findFilesByEntityTypeAndEntityId("StudyRoomFile", id);
+        studyRoomRepository.findByCompanyIdAndIdWithStudyRoomFiles(companyId, id)
+                .orElseThrow(() -> new NotFoundException(ErrorCode.STUDY_ROOM_NOT_FOUND));
+        List<File> studyRoomFile = fileService.findFilesByEntityTypeAndEntityId(ENTITY_TYPE, id);
 
         try {
             for (File file : studyRoomFile) {
                 s3ImageUtil.deleteImageFromS3(file.getS3FileName());
             }
         } catch (Exception e) {
-            throw new IllegalArgumentException("지우다가 오류");
+            throw new S3Exception(ErrorCode.S3_EXCEPTION_DELETE);
         }
         studyRoomRepository.deleteById(id);
     }
 
     public StudyRoom findByIdWithCompany(Long id) {
         return studyRoomRepository.findByIdWithCompany(id)
-                .orElseThrow(() -> new StudyRoomNotFoundException(ErrorCode.STUDY_ROOM_NOT_FOUND));
+                .orElseThrow(() -> new NotFoundException(ErrorCode.STUDY_ROOM_NOT_FOUND));
     }
     public StudyRoom findById(Long id){
         return studyRoomRepository.findById(id)
-                .orElseThrow(() -> new StudyRoomNotFoundException(ErrorCode.STUDY_ROOM_NOT_FOUND));
+                .orElseThrow(() -> new NotFoundException(ErrorCode.STUDY_ROOM_NOT_FOUND));
 
     }
 
@@ -144,12 +146,12 @@ public class StudyRoomService {
                     storeFileName = s3ImageUtil.upload(file);
 
                     FileDto fileDto = new FileDto(originalFilename, storeFileName, file.getSize(), extention);
-                    File studyRoomFile = fileService.createAndSave("StudyRoomFile", fileDto, studyRoom);
+                    File studyRoomFile = fileService.createAndSave(ENTITY_TYPE, fileDto, studyRoom);
 
                     responseDto.getImages().add(studyRoomFile.getS3FileName());
                 } catch (Exception e) {
-                    fileService.deleteFileByEntityAndS3FileName("StudyRoomFile", studyRoom.getId(), storeFileName);
-                    throw new IllegalArgumentException("db에 저장하다가 오류남.");
+                    fileService.deleteFileByEntityAndS3FileName(ENTITY_TYPE, studyRoom.getId(), storeFileName);
+                    throw new S3Exception(ErrorCode.S3_EXCEPTION_SAVE_DB);
                 }
             }
         }

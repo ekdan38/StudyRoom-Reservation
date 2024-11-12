@@ -7,7 +7,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.data.domain.AuditorAware;
 import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 
-@EnableJpaAuditing(auditorAwareRef = "userAuditorAware")
+//@EnableJpaAuditing(auditorAwareRef = "userAuditorAware")
 @SpringBootApplication(exclude = SecurityAutoConfiguration.class)
 public class StudyroomReservationApplication {
 

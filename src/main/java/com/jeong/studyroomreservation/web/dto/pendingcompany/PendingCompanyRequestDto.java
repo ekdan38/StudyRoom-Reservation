@@ -1,9 +1,13 @@
 package com.jeong.studyroomreservation.web.dto.pendingcompany;
 
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+
+import java.time.LocalDate;
+import java.time.LocalTime;
 
 @Data
 @AllArgsConstructor
@@ -25,5 +29,10 @@ public class PendingCompanyRequestDto {
     )
     private String phoneNumber;
 
+    @NotNull
+    private LocalTime openingTime;
+
+    @NotNull
+    private LocalTime closingTime;
 
 }

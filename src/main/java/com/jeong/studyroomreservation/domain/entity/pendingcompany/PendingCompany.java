@@ -9,6 +9,9 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDate;
+import java.time.LocalTime;
+
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
@@ -31,17 +34,23 @@ public class PendingCompany extends BaseEntity {
 
     private String phoneNumber;
 
-    private PendingCompany(User user, String name, String description, String location, String phoneNumber) {
+    private LocalTime openingTime;
+
+    private LocalTime closingTime;
+
+    private PendingCompany(User user, String name, String description, String location, String phoneNumber, LocalTime openingTime, LocalTime closingTime) {
         this.user = user;
         this.name = name;
         this.description = description;
         this.location = location;
         this.phoneNumber = phoneNumber;
+        this.openingTime = openingTime;
+        this.closingTime = closingTime;
     }
 
     //==생성 메서드==//
     public static PendingCompany createPendingCompany(PendingCompanyDto dto, User user){
-        return new PendingCompany(user, dto.getName(), dto.getDescription(), dto.getLocation(), dto.getPhoneNumber());
+        return new PendingCompany(user, dto.getName(), dto.getDescription(), dto.getLocation(), dto.getPhoneNumber(), dto.getOpeningTime(), dto.getClosingTime());
     }
 
     //==수정 메서드==//
@@ -50,6 +59,8 @@ public class PendingCompany extends BaseEntity {
         this.description = dto.getDescription();
         this.location = dto.getLocation();
         this.phoneNumber = dto.getPhoneNumber();
+        this.openingTime = dto.getOpeningTime();
+        this.closingTime = dto.getClosingTime();
     }
 
 }

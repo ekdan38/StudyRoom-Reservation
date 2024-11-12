@@ -58,8 +58,8 @@ public class AuthenticationTest {
                 sharedUsername,
                 "testpassword@",
                 "testName",
-                getUniqueEmail(),
-                "010-0000-0000",
+                "test100@gmll.com",
+                "010-9999-9998",
                 UserRole.ROLE_USER);
         userService.signup(userDto);
     }

@@ -19,7 +19,9 @@ public class PendingCompanyMapper {
                 requestDto.getName(),
                 requestDto.getDescription(),
                 requestDto.getLocation(),
-                requestDto.getPhoneNumber());
+                requestDto.getPhoneNumber(),
+                requestDto.getOpeningTime(),
+                requestDto.getClosingTime());
     }
 
     //Entity => Dto
@@ -30,7 +32,9 @@ public class PendingCompanyMapper {
                 entity.getName(),
                 entity.getDescription(),
                 entity.getLocation(),
-                entity.getPhoneNumber());
+                entity.getPhoneNumber(),
+                entity.getOpeningTime(),
+                entity.getClosingTime());
     }
 
 

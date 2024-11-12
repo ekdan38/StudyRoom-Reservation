@@ -10,7 +10,7 @@ import com.jeong.studyroomreservation.domain.entity.user.User;
 import com.jeong.studyroomreservation.domain.entity.user.UserMapper;
 import com.jeong.studyroomreservation.domain.entity.user.UserRole;
 import com.jeong.studyroomreservation.domain.error.ErrorCode;
-import com.jeong.studyroomreservation.domain.error.exception.PendingCompanyNotFoundException;
+import com.jeong.studyroomreservation.domain.error.exception.NotFoundException;
 import com.jeong.studyroomreservation.domain.repository.PendingCompanyRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -59,12 +59,12 @@ public class PendingCompanyService {
     }
 
     // pendingCompany 단건 조회
-    // 조회 쿼리 2번
+    // 조회 쿼리 1번
     public PendingCompanyWithUserDto getPendingCompany(Long id){
-        PendingCompany pendingCompany = pendingCompanyRepository.findById(id)
-                .orElseThrow(() -> new PendingCompanyNotFoundException(ErrorCode.PENDING_COMPANY_NOT_FOUND));//조회 쿼리 1번
+        PendingCompany pendingCompany = pendingCompanyRepository.findByIdWithUser(id)
+                .orElseThrow(() -> new NotFoundException(ErrorCode.PENDING_COMPANY_NOT_FOUND));//조회 쿼리 1번(join fetch)
 
-        UserDto userDto = userMapper.entityToUserDto(pendingCompany.getUser()); // 조회 쿼리 1번
+        UserDto userDto = userMapper.entityToUserDto(pendingCompany.getUser());
 
         PendingCompanyDto pendingCompanyDto = pendingCompanyMapper.entityToDto(pendingCompany, null);
         return new PendingCompanyWithUserDto(pendingCompanyDto, userDto);
@@ -75,7 +75,7 @@ public class PendingCompanyService {
     @Transactional
     public PendingCompanyDto updatePendingCompany(Long id, PendingCompanyDto dto){
         PendingCompany pendingCompany = pendingCompanyRepository.findById(id)
-                .orElseThrow(() -> new PendingCompanyNotFoundException(ErrorCode.PENDING_COMPANY_NOT_FOUND));
+                .orElseThrow(() -> new NotFoundException(ErrorCode.PENDING_COMPANY_NOT_FOUND));
         pendingCompany.updatePendingCompany(dto);
         return pendingCompanyMapper.entityToDto(pendingCompany, null);
     }
@@ -85,7 +85,7 @@ public class PendingCompanyService {
     // 조회 쿼리 1번, 삭제 쿼리 1번
     public void deletePendingCompany(Long id){
         pendingCompanyRepository.findById(id)
-                .orElseThrow(() -> new PendingCompanyNotFoundException(ErrorCode.PENDING_COMPANY_NOT_FOUND));
+                .orElseThrow(() -> new NotFoundException(ErrorCode.PENDING_COMPANY_NOT_FOUND));
         pendingCompanyRepository.deleteById(id);
     }
 
@@ -95,17 +95,16 @@ public class PendingCompanyService {
         // pendingCompany 지우고, Company에 등록, 해당 User의 role 변경.
 
         // pendingCompany 조회
-        // 조회 쿼리 1번
-        PendingCompany pendingCompany = pendingCompanyRepository.findById(id)
-                .orElseThrow(() -> new PendingCompanyNotFoundException(ErrorCode.PENDING_COMPANY_NOT_FOUND));
+        // 조회 쿼리 1번(fetch join)
+        PendingCompany pendingCompany = pendingCompanyRepository.findByIdWithUser(id)
+                .orElseThrow(() -> new NotFoundException(ErrorCode.PENDING_COMPANY_NOT_FOUND));
 
-        // User 조회, Role 바꿔 주기
-        // 조회 쿼리 1번
+        // Role 바꿔 주기
         User user = pendingCompany.getUser();
         user.updateUserRole(UserRole.ROLE_STUDYROOM_ADMIN);
 
         // Company 등록
-        // Company에 정하는 쿼리 1번
+        // Company에 등록하는 쿼리 1번
         PendingCompanyDto pendingCompanyDto = pendingCompanyMapper.entityToDto(pendingCompany, null);
         CompanyDto companyDto = companyService.approvalPendingCompany(pendingCompanyDto, user);
 
@@ -113,6 +112,11 @@ public class PendingCompanyService {
         // 삭제 쿼리 1번 (1차 캐시에서 가져와서 조회 쿼리 xx)
         pendingCompanyRepository.deleteById(id);
         return companyDto;
+    }
+
+    public PendingCompany findByIdWithUser(Long pendingCompanyId){
+        return pendingCompanyRepository.findByIdWithUser(pendingCompanyId)
+                .orElseThrow(() -> new NotFoundException(ErrorCode.PENDING_COMPANY_NOT_FOUND));
     }
 
 }

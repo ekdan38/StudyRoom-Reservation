@@ -8,6 +8,7 @@ import com.jeong.studyroomreservation.domain.entity.user.User;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -38,17 +39,25 @@ public class Company extends BaseEntity {
 
     private String phoneNumber;
 
-    private Company(User user, String name, String description, String location, String phoneNumber) {
+    private LocalTime openingTime;
+
+    private LocalTime closingTime;
+
+
+    private Company(User user, String name, String description, String location, String phoneNumber, LocalTime openingTime, LocalTime closingTime) {
         this.user = user;
         this.name = name;
         this.description = description;
         this.location = location;
         this.phoneNumber = phoneNumber;
+        this.openingTime = openingTime;
+        this.closingTime = closingTime;
     }
 
     //==생성 메서드==//
     public static Company createCompany(CompanyDto dto, User user){
-        return new Company(user, dto.getName(), dto.getDescription(), dto.getLocation(), dto.getPhoneNumber());
+        return new Company(user, dto.getName(), dto.getDescription(), dto.getLocation(),
+                dto.getPhoneNumber(), dto.getOpeningTime(), dto.getClosingTime());
     }
 
     //==수정 메서드==//
@@ -57,6 +66,8 @@ public class Company extends BaseEntity {
         this.description = dto.getDescription();
         this.location = dto.getLocation();
         this.phoneNumber = dto.getPhoneNumber();
+        this.openingTime = dto.getOpeningTime();
+        this.closingTime = dto.getClosingTime();
     }
 
     //==연관 관계 메서드==//

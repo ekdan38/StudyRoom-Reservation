@@ -5,6 +5,7 @@ import jakarta.validation.constraints.Pattern;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 
+import java.time.LocalTime;
 import java.util.List;
 
 @Data
@@ -27,6 +28,10 @@ public class CompanyUpdateDto {
             message = "전화번호는 010-1234-5678 형식이어야 합니다."
     )
     private String phoneNumber;
+
+    private LocalTime openingTime;
+
+    private LocalTime closingTime;
 
     private List<String> deleteImages;
 

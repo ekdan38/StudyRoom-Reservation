@@ -39,7 +39,7 @@ public class CompanyPostController {
     // 글 등록
     // studyroom_admin
     @PostMapping
-    public ResponseEntity<?> createPost(@RequestPart("file") List<MultipartFile> files,
+    public ResponseEntity<?> createPost(@RequestPart(value = "file", required = false) List<MultipartFile> files,
                                         @RequestPart("data") @Validated CompanyPostRequestDto requestDto,
                                         BindingResult bindingResult,
                                         @PathVariable("companyId") Long companyId,
@@ -87,7 +87,7 @@ public class CompanyPostController {
 
     // 글 수정
     @PutMapping("/{id}")
-    public ResponseEntity<?> updateCompanyPost(@RequestPart("file") List<MultipartFile> files,
+    public ResponseEntity<?> updateCompanyPost(@RequestPart(value = "file", required = false) List<MultipartFile> files,
                                                @RequestPart("data") @Validated CompanyPostUpdateRequestDto requestDto,
                                                BindingResult bindingResult,
                                                @PathVariable("companyId") Long companyId,

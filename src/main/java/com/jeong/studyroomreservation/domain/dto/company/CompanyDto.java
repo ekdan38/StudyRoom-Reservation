@@ -9,6 +9,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -30,12 +31,18 @@ public class CompanyDto {
 
     private String phoneNumber;
 
+    private LocalTime openingTime;
 
-    public CompanyDto(String name, String description, String location, String phoneNumber) {
+    private LocalTime closingTime;
+
+
+    public CompanyDto(String name, String description, String location, String phoneNumber, LocalTime openingTime, LocalTime closingTime) {
         this.name = name;
         this.description = description;
         this.location = location;
         this.phoneNumber = phoneNumber;
+        this.openingTime = openingTime;
+        this.closingTime = closingTime;
     }
 
 

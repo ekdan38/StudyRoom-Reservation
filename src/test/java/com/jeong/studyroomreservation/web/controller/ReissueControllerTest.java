@@ -57,7 +57,7 @@ public class ReissueControllerTest {
                 username,
                 password,
                 "testName",
-                getUniqueEmail(),
+                "network@naver.com",
                 getUniquePhoneNumber(),
                 UserRole.ROLE_USER);
         userService.signup(userDto);
@@ -111,15 +111,15 @@ public class ReissueControllerTest {
     @DisplayName("토큰 재발급 실패_Expired RefreshToken")
     public void Reissue_Fail_Expired_RefreshToken() throws Exception {
         //given
-        String refreshValue = jwtUtil.createJwt("refresh", username, UserRole.ROLE_USER.name(), 100L);
-        TimeUnit.MILLISECONDS.sleep(110L);
+        String refreshValue = jwtUtil.createJwt("refresh", username, UserRole.ROLE_USER.name(), 200L);
+        TimeUnit.MILLISECONDS.sleep(210L);
         Cookie refresh = new Cookie("refresh", refreshValue);
 
         //when
         ResultActions perform = getResultActions(refresh);
 
         //then
-        expectFail(perform, "Refresh token expired");
+        expectFail(perform, "Token is not refresh token");
     }
 
     @Test

@@ -53,7 +53,7 @@ public class AuthorizationTest {
                 username,
                 password,
                 "testName",
-                getUniqueEmail(),
+                "ilma@gmail.com",
                 getUniquePhoneNumber(),
                 UserRole.ROLE_USER);
         userService.signup(userDto);
@@ -66,6 +66,7 @@ public class AuthorizationTest {
     }
 
     @Test
+    @Transactional
     @DisplayName("Access Denied_인가 되지 않은 url 접근")
     public void DeniedHandler() throws Exception {
         //given
@@ -83,6 +84,7 @@ public class AuthorizationTest {
     }
 
     @Test
+    @Transactional
     @DisplayName("인증 되지 않은 상태로 인증이 필요한 자원 접근")
     public void EntryPoint() throws Exception {
         //given

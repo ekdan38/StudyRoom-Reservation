@@ -1,8 +1,12 @@
 spring:
+  profiles:
+    include: private
   datasource:
-    url: jdbc:mysql://localhost:3306/reservation?serverTimezone=UTC&characterEncoding=UTF-8
-    username: 'root'
-    password: '0000'
+    url: jdbc:h2:mem:test
+    username: sa
+    password:
+    driver-class-name: org.h2.Driver
+  h2.console.enabled: true
 
   jpa:
     hibernate:
@@ -10,12 +14,15 @@ spring:
     properties:
       hibernate:
         format_sql: true
-        show_sql: true
-        dialect: org.hibernate.dialect.MySQLDialect
+        show_sql: false
+        dialect: org.hibernate.dialect.H2Dialect
 
 logging.level:
   org.hibernate.SQL: debug
+  org.springframework.transaction.interceptor: debug
+  org.springframework.orm.jpa.JpaTransactionManager: debug
   org.hibernate.type.descriptor.BasicBinder: trace
+  org.springframework.security: debug
 #  org.apache.coyote.http11 : debug
 #  http ?? ??? ??
 jwt:

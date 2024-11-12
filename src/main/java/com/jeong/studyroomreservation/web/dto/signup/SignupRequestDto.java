@@ -13,7 +13,7 @@ public class SignupRequestDto {
 
     @NotBlank
     @Size(min = 6, max = 20)
-    @Pattern(regexp = "^[a-zA-Z0-9]+$", message = "loginId는 영어 대소문자와 숫자만 허용됩니다.") // 영어 대소문자, 숫자만 허용
+    @Pattern(regexp = "^[a-zA-Z0-9]+$", message = "username은 영어 대소문자와 숫자만 허용됩니다.") // 영어 대소문자, 숫자만 허용
     private String username;
 
     @NotBlank
@@ -41,7 +41,7 @@ public class SignupRequestDto {
     )  // 전화번호 형식 제약 추가
     private String phoneNumber;
 
-    private boolean manager = false;
+//    private boolean manager = false;
 
     private boolean admin = false;
 }

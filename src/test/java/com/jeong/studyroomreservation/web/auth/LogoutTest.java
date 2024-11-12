@@ -58,7 +58,7 @@ public class LogoutTest {
                 username,
                 password,
                 "testName",
-                getUniqueEmail(),
+                "Email@gmail.com",
                 getUniquePhoneNumber(),
                 UserRole.ROLE_USER);
         userService.signup(userDto);
@@ -135,7 +135,7 @@ public class LogoutTest {
         perform
                 .andDo(print())
                 .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("message").value("Refresh token expired"));
+                .andExpect(jsonPath("message").value("Invalid refresh token"));
     }
 
     @Test

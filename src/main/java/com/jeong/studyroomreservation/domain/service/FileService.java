@@ -9,6 +9,7 @@ import com.jeong.studyroomreservation.domain.entity.review.Review;
 import com.jeong.studyroomreservation.domain.entity.stuydroom.StudyRoom;
 import com.jeong.studyroomreservation.domain.error.ErrorCode;
 import com.jeong.studyroomreservation.domain.error.exception.FileUnsupportedEntityException;
+import com.jeong.studyroomreservation.domain.error.exception.S3Exception;
 import com.jeong.studyroomreservation.domain.repository.FileRepository;
 import com.jeong.studyroomreservation.domain.s3.S3ImageUtil;
 import lombok.RequiredArgsConstructor;
@@ -40,7 +41,7 @@ public class FileService {
             case "StudyRoomPostFile":
                 return fileRepository.existsByStudyRoomPostFileAndOriginalFileName(entityId, originalName);
             default:
-                throw new FileUnsupportedEntityException(ErrorCode.FILE_UNSUPPORTED_ENTITY);
+                throw new S3Exception(ErrorCode.S3_EXCEPTION_UNSUPPORTED_TYPE);
         }
     }
 
@@ -73,7 +74,7 @@ public class FileService {
             return fileRepository.save(studyRoomPostFile);
 
         } else {
-            throw new FileUnsupportedEntityException(ErrorCode.FILE_UNSUPPORTED_ENTITY);
+            throw new S3Exception(ErrorCode.S3_EXCEPTION_UNSUPPORTED_TYPE);
         }
     }
 
@@ -97,11 +98,11 @@ public class FileService {
                 deletedCount = fileRepository.deleteByStudyRoomPostFileAndS3FileName(entityId, s3FileName);
                 break;
             default:
-                throw new FileUnsupportedEntityException(ErrorCode.FILE_UNSUPPORTED_ENTITY);
+                throw new S3Exception(ErrorCode.S3_EXCEPTION_UNSUPPORTED_TYPE);
         }
 
         if (deletedCount == 0) {
-            throw new RuntimeException("Delete Fail");
+            throw new S3Exception(ErrorCode.S3_EXCEPTION_DELETE);
         }
     }
 
@@ -118,7 +119,7 @@ public class FileService {
             case "StudyRoomPostFile":
                 return fileRepository.findStudyRoomPostFilesByStudyRoomPostId(entityId);
             default:
-                throw new IllegalArgumentException("Unsupported entity type: " + entityType);
+                throw new S3Exception(ErrorCode.S3_EXCEPTION_UNSUPPORTED_TYPE);
         }
     }
 }

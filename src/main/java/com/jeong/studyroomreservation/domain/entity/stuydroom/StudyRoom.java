@@ -56,14 +56,14 @@ public class StudyRoom extends BaseEntity {
     }
 
     //==생성 메세드==//
-    //state는 기본적으로 예약 불가능. requstDto에서 제외하자!
+    //state는 기본적으로 예약 가능. requstDto에서 제외하자!
     public static StudyRoom createStudyRoom(StudyRoomDto dto, Company company){
         StudyRoom studyRoom = new StudyRoom(
                 null,
                 dto.getName(),
                 dto.getCapacity(),
                 dto.getPrice(),
-                RoomState.UNAVAILABLE,
+                RoomState.AVAILABLE,
                 dto.getTv(),
                 dto.getWifi(),
                 dto.getWhiteBoard()

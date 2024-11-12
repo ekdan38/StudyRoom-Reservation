@@ -57,7 +57,6 @@ class SignupControllerTest {
                 "testName",
                 getUniqueEmail(),
                 getUniquePhoneNumber(),
-                false,
                 false
         );
 
@@ -86,7 +85,6 @@ class SignupControllerTest {
                 "test",
                 getUniqueEmail(),
                 getUniquePhoneNumber(),
-                false,
                 false);
         UserDto userDto = userMapper.requestDtoToUserDto(signupRequestDto1);
         userService.signup(userDto);
@@ -97,7 +95,6 @@ class SignupControllerTest {
                 "test",
                 getUniqueEmail(),
                 getUniquePhoneNumber(),
-                false,
                 false);
 
         //when
@@ -127,7 +124,6 @@ class SignupControllerTest {
                 "test",
                 email,
                 getUniquePhoneNumber(),
-                false,
                 false);
         UserDto userDto = userMapper.requestDtoToUserDto(signupRequestDto1);
         userService.signup(userDto);
@@ -138,7 +134,6 @@ class SignupControllerTest {
                 "test",
                 email,
                 getUniquePhoneNumber(),
-                false,
                 false);
 
         //when
@@ -168,7 +163,6 @@ class SignupControllerTest {
                 "test",
                 getUniqueEmail(),
                 phoneNumber,
-                false,
                 false);
         UserDto userDto = userMapper.requestDtoToUserDto(signupRequestDto1);
         userService.signup(userDto);
@@ -179,7 +173,6 @@ class SignupControllerTest {
                 "test",
                 getUniqueEmail(),
                 phoneNumber,
-                false,
                 false);
 
         //when
@@ -216,7 +209,6 @@ class SignupControllerTest {
                 "test",
                 getUniqueEmail(),
                 getUniquePhoneNumber(),
-                false,
                 false);
 
         //when
@@ -244,7 +236,6 @@ class SignupControllerTest {
                 "test",
                 getUniqueEmail(),
                 getUniquePhoneNumber(),
-                false,
                 false
         );
 
@@ -273,7 +264,6 @@ class SignupControllerTest {
                 name,
                 getUniqueEmail(),
                 getUniquePhoneNumber(),
-                false,
                 false
         );
 
@@ -300,7 +290,6 @@ class SignupControllerTest {
                 "test",
                 email,
                 getUniquePhoneNumber(),
-                false,
                 false
         );
 
@@ -328,7 +317,6 @@ class SignupControllerTest {
                 "test",
                 getUniqueEmail(),
                 phoneNumber,
-                false,
                 false
         );
 

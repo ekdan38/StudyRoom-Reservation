@@ -38,8 +38,8 @@ public class StudyRoomPostController {
 
     // 스터디 룸 글 등록
    @PostMapping
-   public ResponseEntity<?> createStudyRoomPost(@PathVariable("studyRoomId") Long studyRoomId,
-                                                @RequestPart("file") List<MultipartFile> files,
+   public ResponseEntity<?> createStudyRoomPost(@PathVariable(value = "studyRoomId") Long studyRoomId,
+                                                @RequestPart(value = "file", required = false) List<MultipartFile> files,
                                                 @RequestPart("data") @Validated StudyRoomPostRequestDto requestDto,
                                                 BindingResult bindingResult,
                                                 @AuthenticationPrincipal UserDto userDto){
@@ -86,9 +86,9 @@ public class StudyRoomPostController {
 
     // 스터디 룸 글 수정
     @PutMapping("/{id}")
-    public ResponseEntity<?> updateStudyRoomPost(@PathVariable("studyRoomId") Long studyRoomId,
+    public ResponseEntity<?> updateStudyRoomPost(@PathVariable(value = "studyRoomId") Long studyRoomId,
                                                  @PathVariable("id") Long id,
-                                                 @RequestPart("files") List<MultipartFile> files,
+                                                 @RequestPart(value = "files", required = false) List<MultipartFile> files,
                                                  @RequestPart("data") @Validated StudyRoomPostUpdateRequestDto updateDto,
                                                  BindingResult bindingResult,
                                                  @AuthenticationPrincipal UserDto userDto){

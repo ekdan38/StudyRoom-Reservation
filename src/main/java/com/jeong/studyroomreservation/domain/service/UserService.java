@@ -4,10 +4,7 @@ import com.jeong.studyroomreservation.domain.dto.user.UserDto;
 import com.jeong.studyroomreservation.domain.entity.user.User;
 import com.jeong.studyroomreservation.domain.entity.user.UserRole;
 import com.jeong.studyroomreservation.domain.error.ErrorCode;
-import com.jeong.studyroomreservation.domain.error.exception.EmailAlreadyExistsException;
-import com.jeong.studyroomreservation.domain.error.exception.PhoneNumberAlreadyExistsException;
-import com.jeong.studyroomreservation.domain.error.exception.UserNotFoundException;
-import com.jeong.studyroomreservation.domain.error.exception.UsernameAlreadyExistsException;
+import com.jeong.studyroomreservation.domain.error.exception.*;
 import com.jeong.studyroomreservation.domain.entity.user.UserMapper;
 import com.jeong.studyroomreservation.domain.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -33,19 +30,19 @@ public class UserService {
         String username = requestDto.getUsername();
         if(userRepository.existsByUsername(username)){
             log.error("Exists username = {}", username);
-            throw new UsernameAlreadyExistsException(ErrorCode.USERNAME_ALREADY_EXISTS);
+            throw new SignupException(ErrorCode.USERNAME_ALREADY_EXISTS);
         }
 
         String email = requestDto.getEmail();
         if(userRepository.existsByEmail(email)){
             log.error("Exists Email = {}", email);
-            throw new EmailAlreadyExistsException(ErrorCode.EMAIL_ALREADY_EXISTS);
+            throw new SignupException(ErrorCode.EMAIL_ALREADY_EXISTS);
         }
 
         String phoneNumber = requestDto.getPhoneNumber();
         if(userRepository.existsByPhoneNumber(phoneNumber)){
             log.error("Exists phoneNumber = {}", username);
-            throw new PhoneNumberAlreadyExistsException(ErrorCode.PHONE_NUMBER_ALREADY_EXISTS);
+            throw new SignupException(ErrorCode.PHONE_NUMBER_ALREADY_EXISTS);
 
         }
 
@@ -55,16 +52,16 @@ public class UserService {
     }
 
     @Transactional
-    public UserDto updateRole(Long userId, UserRole userRole){
+    public UserDto updateRole(Long userId, UserRole updateUserRole){
         User user = findById(userId);
-        user.updateUserRole(userRole);
+        user.updateUserRole(updateUserRole);
         return userMapper.entityToUserDto(user);
     }
 
     // 다른 service 로직에서 User 필요할 때 조회.
     // 사용 : PendingService
     public User findById(Long id){
-        return userRepository.findById(id).orElseThrow(() -> new UserNotFoundException(ErrorCode.USER_NOT_FOUND));
+        return userRepository.findById(id).orElseThrow(() -> new NotFoundException(ErrorCode.USER_NOT_FOUND));
     }
 
 }

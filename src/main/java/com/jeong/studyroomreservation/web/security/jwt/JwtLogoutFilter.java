@@ -2,7 +2,7 @@ package com.jeong.studyroomreservation.web.security.jwt;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.jeong.studyroomreservation.domain.repository.RefreshRepository;
-import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.JwtException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.ServletRequest;
@@ -53,10 +53,13 @@ public class JwtLogoutFilter extends GenericFilterBean {
         //get refresh token
         String refresh = null;
         Cookie[] cookies = request.getCookies();
+        if(cookies == null || cookies.length == 0){
+            responseBody(SC_BAD_REQUEST, response, "Invalid refresh token");
+            return;
+        }
+
         for (Cookie cookie : cookies) {
-
             if (cookie.getName().equals("refresh")) {
-
                 refresh = cookie.getValue();
             }
         }
@@ -68,29 +71,37 @@ public class JwtLogoutFilter extends GenericFilterBean {
             return;
         }
 
-        //expired check
-        try {
-            jwtUtil.isExpired(refresh);
-        } catch (ExpiredJwtException e) {
-
-            //response status code
-            responseBody(SC_BAD_REQUEST, response, "Refresh token expired");
+        // 토큰이 refresh인지 확인 (발급시 페이로드에 명시)
+        String category= null;
+        try{
+            category = jwtUtil.getCategory(refresh);
+        } catch (Exception e){
+            responseBody(SC_BAD_REQUEST, response, "Invalid refresh token");
             return;
         }
 
-        // 토큰이 refresh인지 확인 (발급시 페이로드에 명시)
-        String category = jwtUtil.getCategory(refresh);
         if (!category.equals("refresh")) {
 
             responseBody(SC_BAD_REQUEST, response, "Invalid refresh token");
             return;
         }
 
+////
         //DB에 저장되어 있는지 확인
         Boolean isExist = refreshRepository.existsByRefresh(refresh);
         if (!isExist) {
 
             responseBody(SC_BAD_REQUEST, response, "Invalid refresh token");
+            return;
+        }
+
+        //expired check
+        try {
+            jwtUtil.isExpired(refresh);
+        } catch (JwtException e) {
+
+            //response status code
+            responseBody(SC_BAD_REQUEST, response, "Refresh token expired");
             return;
         }
 

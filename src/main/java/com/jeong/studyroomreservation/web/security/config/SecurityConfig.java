@@ -40,8 +40,13 @@ public class SecurityConfig {
     private final JwtUtil jwtUtil;
     private final RefreshRepository refreshRepository;
 
+    private static final String USER = "USER";
+    private static final String STUDYROOM_ADMIN = "STUDYROOM_ADMIN";
+    private static final String SYSTEM_ADMIN = "SYSTEM_ADMIN";
+
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+
 
 //        AuthenticationManagerBuilder builder = http.getSharedObject(AuthenticationManagerBuilder.class);
 //        builder.authenticationProvider(restAuthenticationProvider);
@@ -55,21 +60,42 @@ public class SecurityConfig {
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/css/**", "/images/**", "/js/**", "/favicon.*", "/*/icon-*").permitAll()
-                        .requestMatchers("/api/signup", "api/login","/api/logout","/api/reissue", "/error").permitAll()
-                        .requestMatchers(new AntPathRequestMatcher("/api/pending-companies", "POST")).hasRole("USER")
-                        .requestMatchers(new AntPathRequestMatcher("/api/pending-companies", "GET")).hasRole("SYSTEM_ADMIN")
-                        .requestMatchers(new AntPathRequestMatcher("/api/pending-companies/{id}", "PUT")).hasRole("USER")
+                        .requestMatchers("/api/signup", "api/login","/api/logout","/api/reissue", "/error", "/api/studyroom/{studyRoomId}/reservation").permitAll()
+                        .requestMatchers(new AntPathRequestMatcher("/api/pending-companies", "POST")).hasAnyRole(USER, STUDYROOM_ADMIN, SYSTEM_ADMIN)
+                        .requestMatchers(new AntPathRequestMatcher("/api/pending-companies", "GET")).hasRole(SYSTEM_ADMIN)
+                        .requestMatchers(new AntPathRequestMatcher("/api/pending-companies/{id}", "GET")).hasRole(SYSTEM_ADMIN)
+                        .requestMatchers(new AntPathRequestMatcher("/api/pending-companies/{id}", "DELETE")).hasRole(SYSTEM_ADMIN)
+                        .requestMatchers(new AntPathRequestMatcher("/api/pending-companies/{id}", "POST")).hasRole(SYSTEM_ADMIN)
+                        .requestMatchers(new AntPathRequestMatcher("/api/pending-companies/{id}", "PUT")).hasAnyRole(USER, STUDYROOM_ADMIN, SYSTEM_ADMIN)
 
-                        .requestMatchers("/api/pending-companies/**").hasRole("SYSTEM_ADMIN")
-                        .requestMatchers(new AntPathRequestMatcher("/api/companies", "GET")).hasRole("USER")
-                        .requestMatchers(new AntPathRequestMatcher("/api/companies/{id}", "GET")).hasRole("USER")
-                        .requestMatchers(new AntPathRequestMatcher("/api/companies/**", "GET")).hasRole("SYSTEM_ADMIN")
+                        .requestMatchers(new AntPathRequestMatcher("/api/companies", "GET")).hasAnyRole(USER, STUDYROOM_ADMIN, SYSTEM_ADMIN)
+                        .requestMatchers(new AntPathRequestMatcher("/api/companies/{id}", "GET")).hasAnyRole(USER, STUDYROOM_ADMIN, SYSTEM_ADMIN)
+                        .requestMatchers(new AntPathRequestMatcher("/api/companies/{id}", "PUT")).hasAnyRole(STUDYROOM_ADMIN, SYSTEM_ADMIN)
+                        .requestMatchers(new AntPathRequestMatcher("/api/companies/{id}", "DELETE")).hasAnyRole(STUDYROOM_ADMIN, SYSTEM_ADMIN)
 
-                        .requestMatchers(new AntPathRequestMatcher("/api/studyrooms", "POST")).hasRole("STUDYROOM_ADMIN")
-                        .requestMatchers(new AntPathRequestMatcher("/api/studyrooms", "GET")).hasRole("USER")
-                        .requestMatchers(new AntPathRequestMatcher("/api/studyrooms/{id}", "GET")).hasRole("USER")
-                        .requestMatchers(new AntPathRequestMatcher("/api/studyrooms/{id}", "PUT")).hasRole("STUDYROOM_ADMIN")
-                        .requestMatchers(new AntPathRequestMatcher("/api/studyrooms/{id}", "DELETE")).hasRole("STUDYROOM_ADMIN")
+                        .requestMatchers(new AntPathRequestMatcher("/api/studyrooms/{companyId}", "POST")).hasAnyRole(STUDYROOM_ADMIN, SYSTEM_ADMIN)
+                        .requestMatchers(new AntPathRequestMatcher("/api/studyrooms/{companyId}", "GET")).hasAnyRole(USER, STUDYROOM_ADMIN, SYSTEM_ADMIN)
+                        .requestMatchers(new AntPathRequestMatcher("/api/studyrooms/{companyId}/{id}", "GET")).hasAnyRole(USER, STUDYROOM_ADMIN, SYSTEM_ADMIN)
+                        .requestMatchers(new AntPathRequestMatcher("/api/studyrooms/{companyId}/{id}", "PUT")).hasAnyRole(STUDYROOM_ADMIN, SYSTEM_ADMIN)
+                        .requestMatchers(new AntPathRequestMatcher("/api/studyrooms/{companyId}/{id}", "DELETE")).hasAnyRole(STUDYROOM_ADMIN, SYSTEM_ADMIN)
+
+                        .requestMatchers(new AntPathRequestMatcher("/api/company-post/{companyId}", "POST")).hasAnyRole(STUDYROOM_ADMIN, SYSTEM_ADMIN)
+                        .requestMatchers(new AntPathRequestMatcher("/api/company-post/{companyId}", "GET")).hasAnyRole(USER, STUDYROOM_ADMIN, SYSTEM_ADMIN)
+                        .requestMatchers(new AntPathRequestMatcher("/api/company-post/{companyId}/{id}", "GET")).hasAnyRole(USER, STUDYROOM_ADMIN, SYSTEM_ADMIN)
+                        .requestMatchers(new AntPathRequestMatcher("/api/company-post/{companyId}/{id}", "PUT")).hasAnyRole(STUDYROOM_ADMIN, SYSTEM_ADMIN)
+                        .requestMatchers(new AntPathRequestMatcher("/api/company-post/{companyId}/{id}", "DELETE")).hasAnyRole(STUDYROOM_ADMIN, SYSTEM_ADMIN)
+
+                        .requestMatchers(new AntPathRequestMatcher("/api/studyroom-post/{studyRoomId}", "POST")).hasAnyRole(STUDYROOM_ADMIN, SYSTEM_ADMIN)
+                        .requestMatchers(new AntPathRequestMatcher("/api/studyroom-post/{studyRoomId}", "GET")).hasAnyRole(USER, STUDYROOM_ADMIN, SYSTEM_ADMIN)
+                        .requestMatchers(new AntPathRequestMatcher("/api/studyroom-post/{studyRoomId}/{id}", "GET")).hasAnyRole(USER, STUDYROOM_ADMIN, SYSTEM_ADMIN)
+                        .requestMatchers(new AntPathRequestMatcher("/api/studyroom-post/{studyRoomId}/{id}", "PUT")).hasAnyRole(STUDYROOM_ADMIN, SYSTEM_ADMIN)
+                        .requestMatchers(new AntPathRequestMatcher("/api/studyroom-post/{studyRoomId}/{id}", "DELETE")).hasAnyRole(STUDYROOM_ADMIN, SYSTEM_ADMIN)
+
+                        .requestMatchers(new AntPathRequestMatcher("/api/studyrooms/{studyRoomId}/reservation", "GET")).hasAnyRole(USER, STUDYROOM_ADMIN, SYSTEM_ADMIN)
+                        .requestMatchers(new AntPathRequestMatcher("/api/studyrooms/{studyRoomId}/reservation", "POST")).hasAnyRole(USER, STUDYROOM_ADMIN, SYSTEM_ADMIN)
+                        .requestMatchers(new AntPathRequestMatcher("/api/studyrooms/{studyRoomId}/reservation/{reservationId}", "DELETE")).hasAnyRole(USER, STUDYROOM_ADMIN, SYSTEM_ADMIN)
+                        .requestMatchers(new AntPathRequestMatcher("/api/studyrooms/{studyRoomId}/reservation/{reservationId}", "GET")).hasAnyRole(STUDYROOM_ADMIN, SYSTEM_ADMIN)
+
                         .requestMatchers("/api/test").hasRole("STUDYROOM_ADMIN")
                         .requestMatchers("/api/test1").hasRole("STUDYROOM_ADMIN")
                         .anyRequest().authenticated()

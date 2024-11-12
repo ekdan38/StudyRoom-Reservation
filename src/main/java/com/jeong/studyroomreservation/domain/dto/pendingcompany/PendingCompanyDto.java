@@ -5,6 +5,9 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDate;
+import java.time.LocalTime;
+
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
@@ -23,11 +26,26 @@ public class PendingCompanyDto {
 
     private String phoneNumber;
 
-    public PendingCompanyDto(Long userId, String name, String description, String location, String phoneNumber) {
+    private LocalTime openingTime;
+
+    private LocalTime closingTime;
+
+    public PendingCompanyDto(Long userId, String name, String description, String location, String phoneNumber, LocalTime openingTime, LocalTime closingTime) {
         this.userId = userId;
         this.name = name;
         this.description = description;
         this.location = location;
         this.phoneNumber = phoneNumber;
+        this.openingTime = openingTime;
+        this.closingTime = closingTime;
+    }
+
+    public PendingCompanyDto(String name, String description, String location, String phoneNumber, LocalTime openingTime, LocalTime closingTime) {
+        this.name = name;
+        this.description = description;
+        this.location = location;
+        this.phoneNumber = phoneNumber;
+        this.openingTime = openingTime;
+        this.closingTime = closingTime;
     }
 }

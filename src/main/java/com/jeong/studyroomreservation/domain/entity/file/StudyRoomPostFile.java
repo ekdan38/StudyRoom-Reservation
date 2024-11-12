@@ -29,7 +29,7 @@ public class StudyRoomPostFile extends File{
     }
 
     private void setStudyRoomPost(StudyRoomPost studyRoomPost){
-        this.setStudyRoomPost(studyRoomPost);
+        this.studyRoomPost = studyRoomPost;
         studyRoomPost.getStudyRoomPostFiles().add(this);
     }
 

@@ -11,7 +11,8 @@ import com.jeong.studyroomreservation.domain.entity.file.CompanyFile;
 import com.jeong.studyroomreservation.domain.entity.file.File;
 import com.jeong.studyroomreservation.domain.entity.user.User;
 import com.jeong.studyroomreservation.domain.error.ErrorCode;
-import com.jeong.studyroomreservation.domain.error.exception.CompanyNotFoundException;
+import com.jeong.studyroomreservation.domain.error.exception.NotFoundException;
+import com.jeong.studyroomreservation.domain.error.exception.S3Exception;
 import com.jeong.studyroomreservation.domain.repository.CompanyRepository;
 import com.jeong.studyroomreservation.domain.s3.S3ImageUtil;
 import lombok.RequiredArgsConstructor;
@@ -29,6 +30,8 @@ import java.util.List;
 @Slf4j(topic = "[CompanyService]")
 @Transactional(readOnly = true)
 public class CompanyService {
+
+    private static final String ENTITY_TYPE = "CompanyFile";
 
     private final CompanyRepository companyRepository;
     private final S3ImageUtil s3ImageUtil;
@@ -55,7 +58,7 @@ public class CompanyService {
     // 조회 쿼리 1번
     public CompanyResponseDto getCompany(Long id) {
         Company company = companyRepository.findById(id)
-                .orElseThrow(() -> new CompanyNotFoundException(ErrorCode.COMPANY_NOT_FOUND));
+                .orElseThrow(() -> new NotFoundException(ErrorCode.COMPANY_NOT_FOUND));
         CompanyResponseDto companyResponseDto = companyMapper.entityToResponse(company);
         List<CompanyFile> companyFiles = company.getCompanyFiles();
         for (CompanyFile companyFile : companyFiles) {
@@ -71,7 +74,7 @@ public class CompanyService {
     public CompanyUpdateResponseDto updateCompany(Long id, CompanyDto updateDto, List<MultipartFile> files, List<String> deleteFiles) {
         // company 조회 쿼리 1번
         Company company = companyRepository.findById(id)
-                .orElseThrow(() -> new CompanyNotFoundException(ErrorCode.COMPANY_NOT_FOUND));
+                .orElseThrow(() -> new NotFoundException(ErrorCode.COMPANY_NOT_FOUND));
         company.updateCompany(updateDto);
 
         CompanyUpdateResponseDto companyUpdateResponseDto =
@@ -84,7 +87,7 @@ public class CompanyService {
                 String originalFilename = file.getOriginalFilename();
 
                 // db에서 file의 EntityType이 CompanyFile이고 companyId, originalName이 일치하는 파일이 있나 검색.
-                Boolean exists = fileService.existsByEntityOriginalNameEntityId("CompanyFile", id, originalFilename);
+                Boolean exists = fileService.existsByEntityOriginalNameEntityId(ENTITY_TYPE, id, originalFilename);
 
                 if (!exists) {
                     try {
@@ -93,12 +96,12 @@ public class CompanyService {
                         String extention = file.getOriginalFilename()
                                 .substring(file.getOriginalFilename().lastIndexOf(".") + 1);
                         FileDto fileDto = new FileDto(file.getOriginalFilename(), storeFileName, file.getSize(), extention);
-                        File companyFile = fileService.createAndSave("CompanyFile", fileDto, company);
+                        File companyFile = fileService.createAndSave(ENTITY_TYPE, fileDto, company);
 
                         companyUpdateResponseDto.getNewImages().add(companyFile.getS3FileName());
                     } catch (Exception e) {
-                        fileService.deleteFileByEntityAndS3FileName("CompanyFile", id, storeFileName);
-                        throw new IllegalArgumentException("db에 저장하다가 오류남.");
+                        fileService.deleteFileByEntityAndS3FileName(ENTITY_TYPE, id, storeFileName);
+                        throw new S3Exception(ErrorCode.S3_EXCEPTION_SAVE_DB);
                     }
                 }
             }
@@ -108,11 +111,11 @@ public class CompanyService {
             try {
                 for (String deleteImage : deleteFiles) {
                     s3ImageUtil.deleteImageFromS3(deleteImage);
-                    fileService.deleteFileByEntityAndS3FileName("CompanyFile", id, deleteImage);
+                    fileService.deleteFileByEntityAndS3FileName(ENTITY_TYPE, id, deleteImage);
                     companyUpdateResponseDto.getDeleteImages().add(deleteImage);
                 }
             } catch (Exception e) {
-                throw new IllegalArgumentException("이미지 삭제하다가 오류남.");
+                throw new S3Exception(ErrorCode.S3_EXCEPTION_DELETE);
             }
         }
 
@@ -129,7 +132,9 @@ public class CompanyService {
                 pendingCompanyDto.getName(),
                 pendingCompanyDto.getDescription(),
                 pendingCompanyDto.getLocation(),
-                pendingCompanyDto.getPhoneNumber());
+                pendingCompanyDto.getPhoneNumber(),
+                pendingCompanyDto.getOpeningTime(),
+                pendingCompanyDto.getClosingTime());
 
         Company company = Company.createCompany(companyDto, user);
 
@@ -142,7 +147,7 @@ public class CompanyService {
     @Transactional
     public void deleteCompany(Long id) {
         companyRepository.findById(id)
-                .orElseThrow(() -> new CompanyNotFoundException(ErrorCode.COMPANY_NOT_FOUND));
+                .orElseThrow(() -> new NotFoundException(ErrorCode.COMPANY_NOT_FOUND));
         List<File> companyFiles = fileService.findFilesByEntityTypeAndEntityId("CompanyFile", id);
 
         try {
@@ -150,14 +155,14 @@ public class CompanyService {
                 s3ImageUtil.deleteImageFromS3(companyFile.getS3FileName());
             }
         } catch (Exception e) {
-            throw new IllegalArgumentException("지우다가 오류");
+            throw new S3Exception(ErrorCode.S3_EXCEPTION_DELETE);
         }
         companyRepository.deleteById(id);
     }
 
     public Company findById(Long id) {
         return companyRepository.findById(id)
-                .orElseThrow(() -> new CompanyNotFoundException(ErrorCode.COMPANY_NOT_FOUND));
+                .orElseThrow(() -> new NotFoundException(ErrorCode.COMPANY_NOT_FOUND));
     }
 
 

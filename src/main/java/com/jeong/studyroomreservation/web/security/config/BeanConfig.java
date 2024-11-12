@@ -16,12 +16,12 @@ public class BeanConfig {
         //기본이 BCryptPasswordEncoder 이다.
     }
 
-    @Bean
-    public RoleHierarchy hierarchy(){
-        return RoleHierarchyImpl.fromHierarchy(
-                "ROLE_SYSTEM_ADMIN > ROLE_STUDYROOM_ADMIN\n" +
-                        "ROLE_STUDYROOM_ADMIN > ROLE_STUDYROOM_MANAGER\n" +
-                        "ROLE_STUDYROOM_MANAGER > ROLE_USER\n" +
-                        "ROLE_USER > ROLE_ANONYMOUS");
-    }
+//    @Bean
+//    public RoleHierarchy hierarchy(){
+//        return RoleHierarchyImpl.fromHierarchy(
+//                "ROLE_SYSTEM_ADMIN > ROLE_STUDYROOM_ADMIN\n" +
+//                        "ROLE_STUDYROOM_ADMIN > ROLE_STUDYROOM_MANAGER\n" +
+//                        "ROLE_STUDYROOM_MANAGER > ROLE_USER\n" +
+//                        "ROLE_USER > ROLE_ANONYMOUS");
+//    }
 }

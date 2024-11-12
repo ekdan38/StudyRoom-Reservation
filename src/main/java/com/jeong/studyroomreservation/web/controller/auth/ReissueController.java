@@ -4,7 +4,7 @@ import com.jeong.studyroomreservation.domain.entity.refresh.Refresh;
 import com.jeong.studyroomreservation.domain.repository.RefreshRepository;
 import com.jeong.studyroomreservation.web.dto.ResponseDto;
 import com.jeong.studyroomreservation.web.security.jwt.JwtUtil;
-import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.JwtException;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -32,6 +32,11 @@ public class ReissueController {
         //get refresh token
         String refresh = null;
         Cookie[] cookies = request.getCookies();
+        if(cookies == null || cookies.length == 0){
+            ResponseDto<Object> responseBody =
+                    getBadRequestResponseBody("Invalid refresh token", "Refresh token is null");
+            return ResponseEntity.badRequest().body(responseBody);
+        }
         for (Cookie cookie : cookies) {
 
             if (cookie.getName().equals("refresh")) {
@@ -48,19 +53,17 @@ public class ReissueController {
             return ResponseEntity.badRequest().body(responseBody);
         }
 
-        //expired check
-        try {
-            jwtUtil.isExpired(refresh);
-        } catch (ExpiredJwtException e) {
-
+        String category= null;
+        try{
+            category = jwtUtil.getCategory(refresh);
+        } catch (Exception e){
             ResponseDto<Object> responseBody
-                    = getBadRequestResponseBody("Invalid refresh token", "Refresh token expired");
+                    = getBadRequestResponseBody("Invalid refresh token", "Token is not refresh token");
             return ResponseEntity.badRequest().body(responseBody);
         }
 
-        // 토큰이 refresh인지 확인 (발급시 페이로드에 명시)
-        String category = jwtUtil.getCategory(refresh);
 
+        // 토큰이 refresh인지 확인 (발급시 페이로드에 명시)
         if (!category.equals("refresh")) {
 
             ResponseDto<Object> responseBody
@@ -77,6 +80,18 @@ public class ReissueController {
                     = getBadRequestResponseBody("Invalid refresh token", "Not exist in DB");
             return ResponseEntity.badRequest().body(responseBody);
         }
+
+
+        //expired check
+        try {
+            jwtUtil.isExpired(refresh);
+        } catch (JwtException e) {
+
+            ResponseDto<Object> responseBody
+                    = getBadRequestResponseBody("Invalid refresh token", "Refresh token expired");
+            return ResponseEntity.badRequest().body(responseBody);
+        }
+
 
         String username = jwtUtil.getUsername(refresh);
         String role = jwtUtil.getRole(refresh);

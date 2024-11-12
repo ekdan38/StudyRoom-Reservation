@@ -38,3 +38,6 @@ out/
 
 
 /src/main/resources/application-private.yml
+/src/main/resources/application.yml
+/src/test/resources/application.yml
+/src/test/resources/application-private.yml

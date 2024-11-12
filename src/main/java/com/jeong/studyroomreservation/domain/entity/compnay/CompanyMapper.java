@@ -17,7 +17,9 @@ public class CompanyMapper {
                 entity.getName(),
                 entity.getDescription(),
                 entity.getLocation(),
-                entity.getPhoneNumber());
+                entity.getPhoneNumber(),
+                entity.getOpeningTime(),
+                entity.getClosingTime());
     }
 
     // update => Dto
@@ -26,7 +28,9 @@ public class CompanyMapper {
                 updateDto.getName(),
                 updateDto.getDescription(),
                 updateDto.getLocation(),
-                updateDto.getPhoneNumber()
+                updateDto.getPhoneNumber(),
+                updateDto.getOpeningTime(),
+                updateDto.getClosingTime()
         );
     }
 
@@ -37,7 +41,9 @@ public class CompanyMapper {
                 entity.getName(),
                 entity.getDescription(),
                 entity.getLocation(),
-                entity.getPhoneNumber()
+                entity.getPhoneNumber(),
+                entity.getOpeningTime(),
+                entity.getClosingTime()
         );
     }
 }

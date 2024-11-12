@@ -4,15 +4,13 @@ import com.jeong.studyroomreservation.domain.dto.file.FileDto;
 import com.jeong.studyroomreservation.domain.dto.post.studyroom.StudyRoomPostDto;
 import com.jeong.studyroomreservation.domain.dto.post.studyroom.StudyRoomPostResponseDto;
 import com.jeong.studyroomreservation.domain.dto.post.studyroom.StudyRoomPostUpdateResponseDto;
-import com.jeong.studyroomreservation.domain.dto.studyroom.StudyRoomDto;
-import com.jeong.studyroomreservation.domain.dto.studyroom.StudyRoomResponseDto;
 import com.jeong.studyroomreservation.domain.entity.file.File;
 import com.jeong.studyroomreservation.domain.entity.file.StudyRoomPostFile;
 import com.jeong.studyroomreservation.domain.entity.post.studyroom.StudyRoomPost;
 import com.jeong.studyroomreservation.domain.entity.post.studyroom.StudyRoomPostMapper;
 import com.jeong.studyroomreservation.domain.entity.stuydroom.StudyRoom;
 import com.jeong.studyroomreservation.domain.error.ErrorCode;
-import com.jeong.studyroomreservation.domain.error.exception.StudyRoomPostNotFoundException;
+import com.jeong.studyroomreservation.domain.error.exception.NotFoundException;
 import com.jeong.studyroomreservation.domain.repository.StudyRoomPostRepository;
 import com.jeong.studyroomreservation.domain.s3.S3ImageUtil;
 import lombok.RequiredArgsConstructor;
@@ -64,8 +62,8 @@ public class StudyRoomPostService {
 
     // 단건 조회
     public StudyRoomPostResponseDto getStudyRoomPost(Long studyRoomId, Long id) {
-        StudyRoomPost foundStudyRoomPost = studyRoomPostRepository.findByStudyRoomIdAndId(studyRoomId, id)
-                .orElseThrow(() -> new StudyRoomPostNotFoundException(ErrorCode.STUDY_ROOM_POST_NOT_FOUND));
+        StudyRoomPost foundStudyRoomPost = studyRoomPostRepository.findByStudyRoomIdAndIdWithStudyRoomPostFiles(studyRoomId, id)
+                .orElseThrow(() -> new NotFoundException(ErrorCode.STUDY_ROOM_POST_NOT_FOUND));
 
         StudyRoomPostResponseDto studyRoomPostResponseDto = studyRoomPostMapper.entityToResponse(foundStudyRoomPost);
         List<StudyRoomPostFile> studyRoomPostFiles = foundStudyRoomPost.getStudyRoomPostFiles();
@@ -78,8 +76,8 @@ public class StudyRoomPostService {
     // 수정
     @Transactional
     public StudyRoomPostUpdateResponseDto updateStudyRoomPost(Long studyRoomId, Long id, StudyRoomPostDto dto, List<MultipartFile> files, List<String> deleteFiles) {
-        StudyRoomPost foundStudyRoomPost = studyRoomPostRepository.findByStudyRoomIdAndId(studyRoomId, id)
-                .orElseThrow(() -> new StudyRoomPostNotFoundException(ErrorCode.STUDY_ROOM_POST_NOT_FOUND));
+        StudyRoomPost foundStudyRoomPost = studyRoomPostRepository.findByStudyRoomIdAndIdWithStudyRoomPostFiles(studyRoomId, id)
+                .orElseThrow(() -> new NotFoundException(ErrorCode.STUDY_ROOM_POST_NOT_FOUND));
         foundStudyRoomPost.updateStudyRoomPost(dto);
 
         StudyRoomPostResponseDto studyRoomPostResponseDto = studyRoomPostMapper.entityToResponse(foundStudyRoomPost);
@@ -105,8 +103,8 @@ public class StudyRoomPostService {
     // 삭제
     @Transactional
     public void deleteStudyRoomPost(Long studyRoomId, Long id){
-        studyRoomPostRepository.findByStudyRoomIdAndId(studyRoomId, id)
-                .orElseThrow(() -> new StudyRoomPostNotFoundException(ErrorCode.STUDY_ROOM_POST_NOT_FOUND));
+        studyRoomPostRepository.findByStudyRoomIdAndIdWithStudyRoomPostFiles(studyRoomId, id)
+                .orElseThrow(() -> new NotFoundException(ErrorCode.STUDY_ROOM_POST_NOT_FOUND));
         List<File> studyRoomPostFile = fileService.findFilesByEntityTypeAndEntityId("StudyRoomPostFile", id);
 
         try{

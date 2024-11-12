@@ -1,16 +1,17 @@
 package com.jeong.studyroomreservation.domain.service;
 
+import com.jeong.studyroomreservation.domain.dto.file.FileDto;
 import com.jeong.studyroomreservation.domain.dto.post.company.CompanyPostDto;
 import com.jeong.studyroomreservation.domain.dto.post.company.CompanyPostResponseDto;
 import com.jeong.studyroomreservation.domain.dto.post.company.CompanyPostUpdateResponseDto;
-import com.jeong.studyroomreservation.domain.dto.file.FileDto;
 import com.jeong.studyroomreservation.domain.entity.compnay.Company;
 import com.jeong.studyroomreservation.domain.entity.file.CompanyPostFile;
 import com.jeong.studyroomreservation.domain.entity.file.File;
 import com.jeong.studyroomreservation.domain.entity.post.company.CompanyPost;
 import com.jeong.studyroomreservation.domain.entity.post.company.CompanyPostMapper;
 import com.jeong.studyroomreservation.domain.error.ErrorCode;
-import com.jeong.studyroomreservation.domain.error.exception.CompanyPostNotFoundException;
+import com.jeong.studyroomreservation.domain.error.exception.NotFoundException;
+import com.jeong.studyroomreservation.domain.error.exception.S3Exception;
 import com.jeong.studyroomreservation.domain.repository.CompanyPostRepository;
 import com.jeong.studyroomreservation.domain.s3.S3ImageUtil;
 import lombok.RequiredArgsConstructor;
@@ -29,6 +30,7 @@ import java.util.List;
 @Transactional(readOnly = true)
 public class CompanyPostService {
 
+    private static final String ENTITY_TYPE = "CompanyPostFile";
     private final CompanyPostMapper companyPostMapper;
     private final CompanyPostRepository companyPostRepository;
     private final CompanyService companyService;
@@ -61,10 +63,10 @@ public class CompanyPostService {
         });
     }
 
-    //단건 조회
+    //단건 조회 (n + 1해결) join fetch
     public CompanyPostResponseDto getCompanyPost(Long companyId, Long id){
-        CompanyPost foundCompanyPost = companyPostRepository.findByCompanyIdAndId(companyId, id)
-                .orElseThrow(() -> new CompanyPostNotFoundException(ErrorCode.COMPANY_POST_NOT_FOUND));
+        CompanyPost foundCompanyPost = companyPostRepository.findByCompanyIdAndIdWithCompanyPostFiles(companyId, id)
+                .orElseThrow(() -> new NotFoundException(ErrorCode.COMPANY_POST_NOT_FOUND));
 
         CompanyPostResponseDto companyPostResponseDto = companyPostMapper.entityToResponse(foundCompanyPost);
         List<CompanyPostFile> companyPostFiles = foundCompanyPost.getCompanyPostFiles();
@@ -84,8 +86,8 @@ public class CompanyPostService {
                                                           List<MultipartFile> files,
                                                           List<String> deleteFiles){
 
-        CompanyPost foundCompanyPost = companyPostRepository.findByCompanyIdAndId(companyId, id)
-                .orElseThrow(() -> new CompanyPostNotFoundException(ErrorCode.COMPANY_POST_NOT_FOUND));
+        CompanyPost foundCompanyPost = companyPostRepository.findByCompanyIdAndIdWithCompanyPostFiles(companyId, id)
+                .orElseThrow(() -> new NotFoundException(ErrorCode.COMPANY_POST_NOT_FOUND));
         foundCompanyPost.updateCompanyPost(dto);
 
         CompanyPostResponseDto companyPostResponseDto = companyPostMapper.entityToResponse(foundCompanyPost);
@@ -96,11 +98,11 @@ public class CompanyPostService {
             try {
                 for (String deleteImage : deleteFiles) {
                     s3ImageUtil.deleteImageFromS3(deleteImage);
-                    fileService.deleteFileByEntityAndS3FileName("StudyRoomFile", id, deleteImage);
+                    fileService.deleteFileByEntityAndS3FileName(ENTITY_TYPE, id, deleteImage);
                     companyPostUpdateResponseDto.getDeleteImages().add(deleteImage);
                 }
             } catch (Exception e) {
-                throw new IllegalArgumentException("이미지 삭제하다가 오류남.");
+                throw new S3Exception(ErrorCode.S3_EXCEPTION_DELETE);
             }
         }
         return companyPostUpdateResponseDto;
@@ -110,16 +112,16 @@ public class CompanyPostService {
     // 삭제
     @Transactional
     public void deleteCompanyPost(Long companyId, Long id){
-        companyPostRepository.findByCompanyIdAndId(companyId, id)
-                .orElseThrow(() -> new CompanyPostNotFoundException(ErrorCode.COMPANY_POST_NOT_FOUND));
-        List<File> companyPostFiles = fileService.findFilesByEntityTypeAndEntityId("CompanyPost", id);
+        companyPostRepository.findByCompanyIdAndIdWithCompanyPostFiles(companyId, id)
+                .orElseThrow(() -> new NotFoundException(ErrorCode.COMPANY_POST_NOT_FOUND));
+        List<File> companyPostFiles = fileService.findFilesByEntityTypeAndEntityId(ENTITY_TYPE, id);
 
         try{
             for (File file : companyPostFiles) {
                 s3ImageUtil.deleteImageFromS3(file.getS3FileName());
             }
         } catch (Exception e){
-            throw new IllegalArgumentException("지우다가 오류");
+            throw new S3Exception(ErrorCode.S3_EXCEPTION_DELETE);
         }
         companyPostRepository.deleteById(id);
     }
@@ -137,12 +139,12 @@ public class CompanyPostService {
                     storeFileName = s3ImageUtil.upload(file);
 
                     FileDto fileDto = new FileDto(originalFilename, storeFileName, file.getSize(), extention);
-                    File studyRoomFile = fileService.createAndSave("CompanyPost", fileDto, companyPost);
+                    File studyRoomFile = fileService.createAndSave(ENTITY_TYPE, fileDto, companyPost);
 
                     responseDto.getImages().add(studyRoomFile.getS3FileName());
                 } catch (Exception e){
-                    fileService.deleteFileByEntityAndS3FileName("CompanyPost", companyPost.getId(), storeFileName);
-                    throw new IllegalArgumentException("db에 저장하다가 오류남.");
+                    fileService.deleteFileByEntityAndS3FileName(ENTITY_TYPE, companyPost.getId(), storeFileName);
+                    throw new S3Exception(ErrorCode.S3_EXCEPTION_SAVE_DB);
                 }
             }
         }

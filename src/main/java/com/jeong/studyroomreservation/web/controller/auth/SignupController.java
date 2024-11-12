@@ -30,7 +30,7 @@ public class SignupController {
         }
         UserDto requestUserDto = userMapper.requestDtoToUserDto(requestDto);
         UserDto userDto = userService.signup(requestUserDto);
-        ResponseDto<UserDto> responseBody = new ResponseDto<>("Success Signup", userDto);
+        ResponseDto<UserDto> responseBody = new ResponseDto<>("Signup Success", userDto);
         return ResponseEntity.ok().body(responseBody);
     }
 
