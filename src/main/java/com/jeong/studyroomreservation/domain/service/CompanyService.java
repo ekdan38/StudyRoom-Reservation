@@ -100,6 +100,7 @@ public class CompanyService {
 
                         companyUpdateResponseDto.getNewImages().add(companyFile.getS3FileName());
                     } catch (Exception e) {
+                        s3ImageUtil.deleteImageFromS3(storeFileName);
                         fileService.deleteFileByEntityAndS3FileName(ENTITY_TYPE, id, storeFileName);
                         throw new S3Exception(ErrorCode.S3_EXCEPTION_SAVE_DB);
                     }

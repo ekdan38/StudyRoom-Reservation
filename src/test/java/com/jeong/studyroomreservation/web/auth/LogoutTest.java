@@ -32,9 +32,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @AutoConfigureMockMvc
 public class LogoutTest {
 
-//    @MockBean
-//    Clock clock;
-
     @Autowired
     MockMvc mockMvc;
 
@@ -48,27 +45,26 @@ public class LogoutTest {
     ObjectMapper objectMapper;
 
     private Cookie refreshToken;
-    private String username = getUniqueUsername();
-    private String password = "testpassword@";
+    private final static String USERNAME = "TestUsername";
+    private final static String PASSWORD = "Testpassword@";
 
     @Transactional
     @BeforeEach
     void init() throws Exception {
         UserDto userDto = new UserDto(
-                username,
-                password,
+                USERNAME,
+                PASSWORD,
                 "testName",
                 "Email@gmail.com",
                 getUniquePhoneNumber(),
                 UserRole.ROLE_USER);
         userService.signup(userDto);
-        LoginDto loginDto = new LoginDto(username, password);
+        LoginDto loginDto = new LoginDto(USERNAME, PASSWORD);
         refreshToken = mockMvc.perform(post("/api/login")
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(loginDto)))
                 .andReturn().getResponse().getCookie("refresh");
-
     }
 
     @Test
@@ -119,7 +115,7 @@ public class LogoutTest {
     @Transactional
     public void logout_Fail_RefreshTokenExpired() throws Exception {
         //given
-        String newRefresh = jwtUtil.createJwt("refresh", username, "ROLE_USER", 2000L);
+        String newRefresh = jwtUtil.createJwt("refresh", USERNAME, "ROLE_USER", 2000L);
         Cookie newRefreshToken = new Cookie("refresh", newRefresh);
 
         TimeUnit.SECONDS.sleep(3);
@@ -143,7 +139,7 @@ public class LogoutTest {
     @Transactional
     public void logout_Fail_Invalid_RefreshToken_notRefresh() throws Exception {
         //given
-        String refresh = jwtUtil.createJwt("access", username, UserRole.ROLE_USER.name(), 100000L);
+        String refresh = jwtUtil.createJwt("access", USERNAME, UserRole.ROLE_USER.name(), 100000L);
         Cookie refreshToken = new Cookie("refresh", refresh);
 
         //when
@@ -165,7 +161,7 @@ public class LogoutTest {
     @Transactional
     public void logout_Fail_Invalid_RefreshToken_Not_DB() throws Exception {
         //given
-        String refresh = jwtUtil.createJwt("refresh", username, UserRole.ROLE_USER.name(), 100000L);
+        String refresh = jwtUtil.createJwt("refresh", USERNAME, UserRole.ROLE_USER.name(), 100000L);
         Cookie refreshToken = new Cookie("refresh", refresh);
 
         //when

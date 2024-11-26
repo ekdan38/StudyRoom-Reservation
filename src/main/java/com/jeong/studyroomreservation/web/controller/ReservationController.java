@@ -60,7 +60,7 @@ public class ReservationController {
         return ResponseEntity.ok().body(responseBody);
     }
 
-    // 예약 조회 페이징
+    // 예약 조회
     // STUDYROOM_ADMIN 이상
     @GetMapping("/{reservationId}")
     public ResponseEntity< ResponseDto<ReservationGetResponseDto>> getReservations(@PathVariable("studyRoomId") Long studyRoomId,

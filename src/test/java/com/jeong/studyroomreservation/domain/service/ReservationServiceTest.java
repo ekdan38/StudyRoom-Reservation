@@ -130,19 +130,15 @@ class ReservationServiceTest {
         for (int i = 0; i < threadCount; i++) {
             executorService.submit(() -> {
                 try {
-                    System.out.println("스레드 실행 중: " + Thread.currentThread().getName());
                     ReservationResponseDto reservation = reservationService.createReservation(studyRoomId, localDate, alreadyStartTime, alreadyEndTime, userDto);
-                    System.out.println("성공: " + Thread.currentThread().getName());
                     results.add("success");
                 } catch (Exception e) {
-                    System.out.println("실패: " + Thread.currentThread().getName() + " - " + e.getMessage());
                     results.add("failed: " + e.getMessage());
                 } finally {
                     latch.countDown();
                 }
             });
         }
-
 
         latch.await();
         executorService.shutdown();
@@ -152,7 +148,6 @@ class ReservationServiceTest {
 
         long successCount = results.stream().filter(result -> result.equals("success")).count();
         long failedCount = results.stream().filter(result -> result.startsWith("failed")).count();
-        System.out.println("성공 횟수: " + successCount + ", 실패 횟수: " + failedCount);
         // 예약된 항목이 1개인지 확인
         assertThat(reservations.size()).isEqualTo(1);
 

@@ -42,7 +42,7 @@ public class AuthenticationTest {
     @Autowired
     ObjectMapper objectMapper;
 
-    private String sharedUsername = getUniqueUsername();
+    private final static String USERNAME = "TestUsername";
 
     private ResultActions getResultActions(String url, Object responseBody) throws Exception {
         return mockMvc.perform(post(url)
@@ -55,7 +55,7 @@ public class AuthenticationTest {
     @BeforeEach
     void init() throws Exception {
         UserDto userDto = new UserDto(
-                sharedUsername,
+                USERNAME,
                 "testpassword@",
                 "testName",
                 "test100@gmll.com",
@@ -71,7 +71,7 @@ public class AuthenticationTest {
     public void authentication_Success() throws Exception {
         //given
         String refresh = "";
-        String username = sharedUsername;
+        String username = USERNAME;
         String password = "testpassword@";
         LoginDto loginDto = new LoginDto(username, password);
 
@@ -104,7 +104,7 @@ public class AuthenticationTest {
     @DisplayName("로그인 실패_일치하는 username 없음")
     public void authentication_Fail_UsernameNotFoundException() throws Exception {
         //given
-        String username = getUniqueUsername();
+        String username = "NoUsername";
         String password = "testpassword@";
         LoginDto loginDto = new LoginDto(username, password);
 
@@ -123,7 +123,7 @@ public class AuthenticationTest {
     @DisplayName("로그인 실패_일치하는 password 없음")
     public void authentication_Fail_BadCredentialsException() throws Exception {
         //given
-        String username = sharedUsername;
+        String username = USERNAME;
         String password = "failpassword";
         LoginDto loginDto = new LoginDto(username, password);
 
@@ -142,7 +142,7 @@ public class AuthenticationTest {
     @DisplayName("로그인 실패_요청값이 틀림(필드)")
     public void authentication_Fail_UnrecognizedPropertyException() throws Exception {
         //given
-        String username = sharedUsername;
+        String username = USERNAME;
         String password = "failpassword";
         LoginDto loginDto = new LoginDto(username, password);
 

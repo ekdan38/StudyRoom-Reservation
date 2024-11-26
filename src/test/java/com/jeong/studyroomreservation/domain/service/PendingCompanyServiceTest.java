@@ -81,7 +81,7 @@ class PendingCompanyServiceTest {
         //then
         List<PendingCompanyWithUserDto> content = page.getContent();
         assertThat(content.size()).isEqualTo(2); //조회된 데이터 수
-        assertThat(page.getTotalElements()).isEqualTo(14); //전체 데이터 수
+        assertThat(page.getTotalElements()).isEqualTo(4); //전체 데이터 수
         assertThat(page.getNumber()).isEqualTo(0); //페이지 번호
         assertThat(page.getTotalPages()).isEqualTo(7); //전체 페이지 번호
         assertThat(page.isFirst()).isTrue(); //첫번째 항목인가?

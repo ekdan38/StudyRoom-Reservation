@@ -41,8 +41,10 @@ public class AuthorizationTest {
     @Autowired
     JwtUtil jwtUtil;
 
-    private String username = getUniqueUsername();
-    private String password = "testpassword@";
+    private final static String USERNAME = "TestUsername";
+    private final static String PASSWORD = "Testpassword@";
+    private final static String EMAIL = "test@naver.com";
+
     private String successAccessToken = "";
     private Cookie successRefreshToken;
 
@@ -50,24 +52,24 @@ public class AuthorizationTest {
     @BeforeEach
     void init() throws Exception {
         UserDto userDto = new UserDto(
-                username,
-                password,
+                USERNAME,
+                PASSWORD,
                 "testName",
-                "ilma@gmail.com",
+                EMAIL,
                 getUniquePhoneNumber(),
                 UserRole.ROLE_USER);
         userService.signup(userDto);
         MvcResult mvcResult = mockMvc.perform(post("/api/login")
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(new LoginDto(username, password)))).andReturn();
+                .content(objectMapper.writeValueAsString(new LoginDto(USERNAME, PASSWORD)))).andReturn();
         successAccessToken = mvcResult.getResponse().getHeader("access");
         successRefreshToken = mvcResult.getResponse().getCookie("refresh");
     }
 
     @Test
     @Transactional
-    @DisplayName("Access Denied_인가 되지 않은 url 접근")
+    @DisplayName("Access Denied_권한이 없는 url 접근")
     public void DeniedHandler() throws Exception {
         //given
         ResultActions perform = mockMvc.perform(post("/api/test")

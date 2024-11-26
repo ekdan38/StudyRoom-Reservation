@@ -143,6 +143,7 @@ public class CompanyPostService {
 
                     responseDto.getImages().add(studyRoomFile.getS3FileName());
                 } catch (Exception e){
+                    s3ImageUtil.deleteImageFromS3(storeFileName);
                     fileService.deleteFileByEntityAndS3FileName(ENTITY_TYPE, companyPost.getId(), storeFileName);
                     throw new S3Exception(ErrorCode.S3_EXCEPTION_SAVE_DB);
                 }

@@ -135,6 +135,7 @@ public class StudyRoomPostService {
 
                     responseDto.getImages().add(studyRoomFile.getS3FileName());
                 } catch (Exception e) {
+                    s3ImageUtil.deleteImageFromS3(storeFileName);
                     fileService.deleteFileByEntityAndS3FileName("StudyRoomPostFile", studyRoomPost.getId(), storeFileName);
                     throw new IllegalArgumentException("db에 저장하다가 오류남.");
                 }
